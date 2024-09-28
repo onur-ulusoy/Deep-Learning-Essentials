@@ -32,17 +32,46 @@ class SpiralData:
         self.spiral2 = np.array([r_b * np.cos(theta + np.pi), r_b * np.sin(theta + np.pi)]).T
         self.spiral2 += np.random.randn(self.num_points, 2) * self.noise  # Adding noise
 
-    def plot_data(self):
+    def get_coordinates(self):
         """
-        Plot the generated spiral data using matplotlib.
+        Get the x and y coordinates of the spirals.
+        
+        :return: Tuple of x and y coordinates for spiral1 and spiral2
         """
         if self.spiral1 is None or self.spiral2 is None:
             raise ValueError("Spiral data not generated. Call `generate_data()` first.")
         
+        # Spiral 1 coordinates (x1, y1)
+        x1, y1 = self.spiral1[:, 0], self.spiral1[:, 1]
+        
+        # Spiral 2 coordinates (x2, y2)
+        x2, y2 = self.spiral2[:, 0], self.spiral2[:, 1]
+        
+        return (x1, y1), (x2, y2)
+
+    def plot_data(self):
+        """
+        Plot the generated spiral data using matplotlib.
+        """
+        # Get the coordinates of the two spirals
+        (x1, y1), (x2, y2) = self.get_coordinates()
+        
+        # Plotting
         plt.figure(figsize=(6, 6))
-        plt.scatter(self.spiral1[:, 0], self.spiral1[:, 1], color='blue', label='Spiral 1')
-        plt.scatter(self.spiral2[:, 0], self.spiral2[:, 1], color='red', label='Spiral 2')
+        plt.scatter(x1, y1, color='blue', label='Spiral 1')
+        plt.scatter(x2, y2, color='red', label='Spiral 2')
         plt.axis('equal')  # Equal scaling for both axes
         plt.legend()
-        plt.title('Spiral Data Points')
+        plt.title('Extended Spiral Data Points')
         plt.show()
+
+# Example of using the SpiralData class
+if __name__ == "__main__":
+    # Create an instance of SpiralData
+    spiral_data = SpiralData(num_points=250, noise=0.2, revolutions=4)
+    
+    # Generate the spiral data
+    spiral_data.generate_data()
+    
+    # Plot the data using the refactored plot_data method
+    spiral_data.plot_data()
