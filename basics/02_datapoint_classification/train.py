@@ -30,6 +30,6 @@ network = NN(input_size, hidden1_size, hidden2_size, output_size, learning_rate=
 animator = AnimateTraining(network, X, y, real_time=False)
 
 # Perform training and animate the process
-animator.animate(epochs=50, interval=100)
+animator.animate(epochs=1, interval=100)
 
 #network.train(X, y, epochs=1000)
