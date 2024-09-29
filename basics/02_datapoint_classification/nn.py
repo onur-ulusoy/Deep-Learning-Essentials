@@ -52,10 +52,11 @@ class NN:
     def backward_pass(self, X, y, y_pred):
         m = y.shape[0]
         """ print(m) """
-        y = y.reshape(-1, 1)  # Change y shape from (500,) to (500, 1)
 
         #dz3 means dL/dz3 that is derivative of z3 wrt. loss/cost function
         dz3 = y_pred - y  # Difference between predicted probability and true label
+        #print(y.T)
+
         self.dw3 = np.matmul(self.a2.T, dz3) / m
         self.db3 = np.sum(dz3, axis=0, keepdims=True)
 
@@ -87,10 +88,6 @@ class NN:
         self.b1 -= self.learning_rate * self.db1
     
     def calculate_loss(self, y, y_pred):
-        # Ensure y and y_pred have the same shape
-        if y.ndim == 1:
-            y = y.reshape(-1, 1)
-
         # Binary Cross-Entropy Loss
         loss = -np.mean(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
         return loss
