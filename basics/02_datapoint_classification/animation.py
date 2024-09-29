@@ -1,108 +1,97 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-class AnimationNN:
-    def __init__(self, nn, X, y):
-        # Store the neural network object and training data
+class AnimationTraining:
+    def __init__(self, nn, X, y, real_time=True):
         self.nn = nn
         self.X = X
         self.y = y
+        self.real_time = real_time
 
-        # Initialize lists to store the history of loss, weights, and gradients
         self.loss_history = []
-        self.W1_history = []
-        self.b1_history = []
-        self.W2_history = []
-        self.b2_history = []
-        self.W3_history = []
-        self.b3_history = []
+        self.W_history = [[] for _ in range(3)]
+        self.b_history = [[] for _ in range(3)]
+        self.dW_history = [[] for _ in range(3)]
+        self.db_history = [[] for _ in range(3)]
 
-        self.dW1_history = []
-        self.db1_history = []
-        self.dW2_history = []
-        self.db2_history = []
-        self.dW3_history = []
-        self.db3_history = []
+        self.fig, self.axes = plt.subplots(2, 2, figsize=(15, 12))
+        self.fig.suptitle('Neural Network Training Visualization', fontsize=16)
 
-        # Create figure and axes for subplots
-        self.fig, self.axes = plt.subplots(3, 4, figsize=(15, 10))
-        self.fig.suptitle('Neural Network Training Visualization')
-
-        # Plot initialization
         self.initialize_plots()
 
     def initialize_plots(self):
-        # Initialize Loss plot
-        self.axes[0, 0].set_title("Loss")
+        self.axes[0, 0].set_title("Loss", fontsize=14)
+        self.axes[0, 0].set_xlabel("Epochs", fontsize=12)
+        self.axes[0, 0].set_ylabel("Loss", fontsize=12)
         self.loss_line, = self.axes[0, 0].plot([], [], 'r-')
-        
-        # Initialize W1, b1, W2, b2, W3, b3 plots
-        self.W1_line, = self.axes[0, 1].plot([], [], 'g-', label="W1")
-        self.b1_line, = self.axes[0, 2].plot([], [], 'b-', label="b1")
-        self.W2_line, = self.axes[1, 1].plot([], [], 'g-', label="W2")
-        self.b2_line, = self.axes[1, 2].plot([], [], 'b-', label="b2")
-        self.W3_line, = self.axes[2, 1].plot([], [], 'g-', label="W3")
-        self.b3_line, = self.axes[2, 2].plot([], [], 'b-', label="b3")
-        
-        # Initialize dW1, db1, dW2, db2, dW3, db3 plots
-        self.dW1_line, = self.axes[0, 3].plot([], [], 'g--', label="dW1")
-        self.db1_line, = self.axes[0, 3].plot([], [], 'b--', label="db1")
-        self.dW2_line, = self.axes[1, 3].plot([], [], 'g--', label="dW2")
-        self.db2_line, = self.axes[1, 3].plot([], [], 'b--', label="db2")
-        self.dW3_line, = self.axes[2, 3].plot([], [], 'g--', label="dW3")
-        self.db3_line, = self.axes[2, 3].plot([], [], 'b--', label="db3")
 
-        # Set axis labels
+        titles = ["Weights", "Biases", "Gradients"]
+        colors = ['r', 'g', 'b']
+        
+        for i, (ax, title) in enumerate(zip(self.axes.flat[1:], titles)):
+            ax.set_title(title, fontsize=14)
+            ax.set_xlabel("Epochs", fontsize=12)
+            for j in range(3):
+                if i < 2:
+                    line, = ax.plot([], [], f'{colors[j]}-', label=f'Layer {j+1}')
+                    setattr(self, f'{title[0].lower()}{j+1}_line', line)
+                else:
+                    w_line, = ax.plot([], [], f'{colors[j]}-', label=f'dW_{j+1}')
+                    b_line, = ax.plot([], [], f'{colors[j]}--', label=f'db_{j+1}')
+                    setattr(self, f'dw{j+1}_line', w_line)
+                    setattr(self, f'db{j+1}_line', b_line)
+            ax.legend(fontsize=10)
+
         for ax in self.axes.flat:
+            ax.tick_params(axis='both', which='major', labelsize=10)
             ax.set_xlim(0, 1000)
-            ax.set_ylim(-1, 1)  # Adjust based on your specific parameter range
+            ax.set_ylim(-1, 1)
 
     def update_plot_data(self, epoch, loss):
-        # Update histories
         self.loss_history.append(loss)
-        self.W1_history.append(self.nn.W1.mean())
-        self.b1_history.append(self.nn.b1.mean())
-        self.W2_history.append(self.nn.W2.mean())
-        self.b2_history.append(self.nn.b2.mean())
-        self.W3_history.append(self.nn.W3.mean())
-        self.b3_history.append(self.nn.b3.mean())
+        
+        for i in range(3):
+            self.W_history[i].append(getattr(self.nn, f'W{i+1}').mean())
+            self.b_history[i].append(getattr(self.nn, f'b{i+1}').mean())
+            self.dW_history[i].append(getattr(self.nn, f'dw{i+1}').mean())
+            self.db_history[i].append(getattr(self.nn, f'db{i+1}').mean())
 
-        self.dW1_history.append(self.nn.dw1.mean())
-        self.db1_history.append(self.nn.db1.mean())
-        self.dW2_history.append(self.nn.dw2.mean())
-        self.db2_history.append(self.nn.db2.mean())
-        self.dW3_history.append(self.nn.dw3.mean())
-        self.db3_history.append(self.nn.db3.mean())
-
-        # Update lines data for animation
         self.loss_line.set_data(range(len(self.loss_history)), self.loss_history)
-        self.W1_line.set_data(range(len(self.W1_history)), self.W1_history)
-        self.b1_line.set_data(range(len(self.b1_history)), self.b1_history)
-        self.W2_line.set_data(range(len(self.W2_history)), self.W2_history)
-        self.b2_line.set_data(range(len(self.b2_history)), self.b2_history)
-        self.W3_line.set_data(range(len(self.W3_history)), self.W3_history)
-        self.b3_line.set_data(range(len(self.b3_history)), self.b3_history)
 
-        self.dW1_line.set_data(range(len(self.dW1_history)), self.dW1_history)
-        self.db1_line.set_data(range(len(self.db1_history)), self.db1_history)
-        self.dW2_line.set_data(range(len(self.dW2_history)), self.dW2_history)
-        self.db2_line.set_data(range(len(self.db2_history)), self.db2_history)
-        self.dW3_line.set_data(range(len(self.dW3_history)), self.dW3_history)
-        self.db3_line.set_data(range(len(self.db3_history)), self.db3_history)
+        for i in range(3):
+            getattr(self, f'w{i+1}_line').set_data(range(len(self.W_history[i])), self.W_history[i])
+            getattr(self, f'b{i+1}_line').set_data(range(len(self.b_history[i])), self.b_history[i])
+            getattr(self, f'dw{i+1}_line').set_data(range(len(self.dW_history[i])), self.dW_history[i])
+            getattr(self, f'db{i+1}_line').set_data(range(len(self.db_history[i])), self.db_history[i])
 
-        # Redraw the plot
-        self.fig.canvas.draw()
+        for ax in self.axes.flat:
+            ax.set_xlim(0, max(1000, epoch))
+            ax.relim()
+            ax.autoscale_view()
+
+        if self.real_time:
+            self.fig.canvas.draw()
 
     def animate(self, epochs, interval=100):
         def update(epoch):
-            y_pred = self.nn.forward_pass(self.X)  # Perform forward pass
-            self.nn.backward_pass(self.X, self.y, y_pred)  # Perform backpropagation
+            y_pred = self.nn.forward_pass(self.X)
+            self.nn.backward_pass(self.X, self.y, y_pred)
             
             loss = self.nn.calculate_loss(self.y, y_pred)
-            self.update_plot_data(epoch, loss)  # Update the plots
+            self.update_plot_data(epoch, loss)
 
             if epoch % interval == 0:
                 print(f"Epoch {epoch}, Loss: {loss:.4f}")
 
-        anim = FuncAnimation(self.fig, update, frames=epochs, repeat=False, interval=200)
+        if self.real_time:
+            anim = FuncAnimation(self.fig, update, frames=epochs, repeat=False, interval=200)
+            plt.show()
+        else:
+            for epoch in range(epochs):
+                update(epoch)
+            self.show_final_plots()
+
+    def show_final_plots(self):
+        self.update_plot_data(len(self.loss_history) - 1, self.loss_history[-1])
+        plt.tight_layout()
         plt.show()
