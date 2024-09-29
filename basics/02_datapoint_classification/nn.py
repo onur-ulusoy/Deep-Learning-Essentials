@@ -36,35 +36,34 @@ class NN:
         self.z3 = np.matmul(self.a2, self.W3) + self.b3
         self.a3 = self.softmax(self.z3)
 
-        print("z1 shape: ", self.z1.shape)
+        """ print("z1 shape: ", self.z1.shape)
         print("z2 shape: ", self.z2.shape)
-        print("z3 shape: ", self.z3.shape)
+        print("z3 shape: ", self.z3.shape) """
 
         return self.a3
     
     # Backward Propagation
     def backward_pass(self, X, y, y_pred):
         m = y.shape[0]
-        print(m)
+        """ print(m) """
         y = y.reshape(-1, 1)  # Change y shape from (500,) to (500, 1)
 
         #dz3 means dL/dz3 that is derivative of z3 wrt. loss/cost function
         dz3 = y_pred - y # Difference between predicted probability and true label
-        print(dz3.shape)
-
         self.dw3 = np.matmul(self.a2.T, dz3) / m
-        print(self.dw3.shape)
-
         self.db3 = np.sum(dz3, axis=0, keepdims=True)
-        print(self.db3.shape)
+
+        """ print(dz3.shape)
+        print(self.dw3.shape)
+        print(self.db3.shape) """
 
         dz2 = np.matmul(dz3, self.W3.T) * (self.a2 * (1 - self.a2)) # Derivative of sigmoid
         self.dw2 = np.dot(self.a1.T, dz2) / m
         self.db2 = np.sum(dz2, axis=0, keepdims=True) / m
 
-        print(dz2.shape)
+        """ print(dz2.shape)
         print(self.dw2.shape)
-        print(self.db2.shape)
+        print(self.db2.shape) """
 
         dz1 = np.dot(dz2, self.W2.T) * (self.a1 * (1 - self.a1))  # Derivative of sigmoid
         self.dw1 = np.dot(X.T, dz1) / m
@@ -73,13 +72,37 @@ class NN:
         self.update_params()
 
     def update_params(self):
-        self.w3 -= self.learning_rate * self.dw3
-        self.w2 -= self.learning_rate * self.dw2
-        self.w1 -= self.learning_rate * self.dw1
+        self.W3 -= self.learning_rate * self.dw3
+        self.W2 -= self.learning_rate * self.dw2
+        self.W1 -= self.learning_rate * self.dw1
 
         self.b3 -= self.learning_rate * self.db3
         self.b2 -= self.learning_rate * self.db2
         self.b1 -= self.learning_rate * self.db1
+    
+    def calculate_loss(self, y, y_pred):
+        # Ensure y and y_pred have the same shape
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+        # Binary Cross-Entropy Loss
+        loss = -np.mean(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
+        return loss
+    
+    def train(self, X, y, epochs=1000):
+        for epoch in range(epochs):
+            # Forward pass to get predictions
+            y_pred = self.forward_pass(X)
+            
+            # Backward pass to update weights
+            self.backward_pass(X, y, y_pred)
+
+            # Every 100 epochs, calculate and print the loss
+            if epoch % 100 == 0:
+                loss = self.calculate_loss(y, y_pred)
+                print(f'Epoch {epoch}, Loss: {loss:.4f}')
+
+
+
 
 
 

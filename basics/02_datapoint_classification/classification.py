@@ -23,10 +23,4 @@ hidden2_size = 4
 output_size = 1
 
 network = NN(input_size, hidden1_size, hidden2_size, output_size)
-
-y_pred = network.forward_pass(X)
-print("y_pred shape:", y_pred.shape)
-print("y shape:", y.shape)
-
-network.backward_pass(X, y, y_pred)
-#print(y_pred)
+network.train(X, y, epochs=1000)
