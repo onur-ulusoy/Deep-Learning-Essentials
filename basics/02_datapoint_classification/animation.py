@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-import numpy as np
 
 class AnimateTraining:
     def __init__(self, nn, X, y, real_time=True):
@@ -100,6 +99,9 @@ class AnimateTraining:
             for _ in range(epochs):
                 update(None)
             self.show_final_plots()
+        
+        # Save the trained model at the end
+        self.nn.save_model()
 
     def show_final_plots(self):
         self.update_plot_data()

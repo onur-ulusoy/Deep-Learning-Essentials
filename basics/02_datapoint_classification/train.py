@@ -7,7 +7,7 @@ np.random.seed(42)
 # Create an instance of SpiralData
 train_data = SpiralData(num_points=250, noise=0.2, revolutions=4)
 train_data.generate_data()
-train_data.plot_data()
+#train_data.plot_data()
 
 # Get the coordinates
 (x1, y1), (x2, y2) = train_data.get_coordinates()

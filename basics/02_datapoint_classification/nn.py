@@ -1,4 +1,5 @@
 import numpy as np
+import pickle, os
 
 # Neural network for desired architecture, created using only numpy
 class NN:
@@ -107,8 +108,23 @@ class NN:
                 print(f'Epoch {epoch}, Loss: {loss:.4f}')
                 #print(self.dw2)
 
+    def save_model(self):
+        # Save only model weights and biases
+        model_data = {
+            'W1': self.W1, 'b1': self.b1,
+            'W2': self.W2, 'b2': self.b2,
+            'W3': self.W3, 'b3': self.b3
+        }
 
+        # Get the directory where the script is located
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, 'trained_model.pkl')
 
+        # Save to a file (pickle format)
+        with open(file_path, 'wb') as f:
+            pickle.dump(model_data, f)
+        
+        print(f"Model weights and biases saved successfully at {file_path}.")
 
 
 
