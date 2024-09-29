@@ -19,8 +19,8 @@ def load_model():
     else:
         raise FileNotFoundError(f"No saved model found at {file_path}.")
 
-# Function to plot test points with their predicted classes
-def plot_predictions(X, y_pred_class):
+# Function to plot test points with their predicted classes and optional labels
+def plot_predictions(X, y_pred_class, y_pred, draw_numbers=False):
     plt.figure(figsize=(6, 6))
 
     # Plot points predicted as class 0
@@ -28,6 +28,11 @@ def plot_predictions(X, y_pred_class):
 
     # Plot points predicted as class 1
     plt.scatter(X[y_pred_class[:, 0] == 1][:, 0], X[y_pred_class[:, 0] == 1][:, 1], color='red', label='Class 1')
+
+    # Annotate points with predicted values if draw_numbers is True
+    if draw_numbers:
+        for i in range(len(X)):
+            plt.annotate(f"{y_pred[i][0]:.2f}", (X[i][0], X[i][1]), fontsize=8, ha='right')
 
     plt.title("Test Data with Predicted Classes")
     plt.xlabel("Feature 1")
@@ -66,7 +71,7 @@ y_test = y_test.reshape(-1, 1)
 
 # Perform a forward pass using the loaded model
 y_pred = network.forward_pass(X_test)
-
+#print(y_pred.T)
 # Classify predictions: if probability > 0.5, classify as 1, else 0
 y_pred_class = (y_pred > 0.5).astype(int)
 
@@ -74,6 +79,6 @@ y_pred_class = (y_pred > 0.5).astype(int)
 accuracy = np.mean(y_pred_class == y_test) * 100
 print(f"Test Accuracy: {accuracy:.2f}%")
 
-test_data.plot_data()
-# Plot test points with predicted classes
-plot_predictions(X_test, y_pred_class)
+#test_data.plot_data()
+# Plot test points with predicted classes and values
+plot_predictions(X_test, y_pred_class, y_pred, draw_numbers=True)
