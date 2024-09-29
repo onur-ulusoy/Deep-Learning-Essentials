@@ -48,7 +48,17 @@ class SpiralData:
         x2, y2 = self.spiral2[:, 0], self.spiral2[:, 1]
         
         return (x1, y1), (x2, y2)
+    
+    def get_labeled_data(self):
+        """ combine spiral coordinates and create labels """
+        # Combine coordinates into a single feature array
+        X = np.vstack((self.spiral1, self.spiral2))
 
+        # Create labels: 0 for blue, 1 for red
+        y = np.array([0] * self.num_points + [1] * self.num_points)
+
+        return X,y
+    
     def plot_data(self):
         """
         Plot the generated spiral data using matplotlib.
@@ -64,14 +74,3 @@ class SpiralData:
         plt.legend()
         plt.title('Extended Spiral Data Points')
         plt.show()
-
-# Example of using the SpiralData class
-if __name__ == "__main__":
-    # Create an instance of SpiralData
-    spiral_data = SpiralData(num_points=250, noise=0.2, revolutions=4)
-    
-    # Generate the spiral data
-    spiral_data.generate_data()
-    
-    # Plot the data using the refactored plot_data method
-    spiral_data.plot_data()

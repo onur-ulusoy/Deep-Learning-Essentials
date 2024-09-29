@@ -1,9 +1,22 @@
 from spiral_datapoint import SpiralData
+import numpy as np
 
+np.random.seed(42)
 # Create an instance of SpiralData
-spiral_data = SpiralData(num_points=250, noise=0.2, revolutions=4)
-spiral_data.generate_data()
-spiral_data.plot_data()
+train_data = SpiralData(num_points=250, noise=0.2, revolutions=4)
+train_data.generate_data()
+#spiral_data.plot_data()
 
- # Get the coordinates
-(x1, y1), (x2, y2) = spiral_data.get_coordinates()
+# Get the coordinates
+(x1, y1), (x2, y2) = train_data.get_coordinates()
+
+X,y = train_data.get_labeled_data()
+
+input_size = 500
+hidden1_size = 8
+hidden2_size = 4
+output_size = 2
+
+def forward_pass(x, W1, b1, W2, b2):
+    pass
+
