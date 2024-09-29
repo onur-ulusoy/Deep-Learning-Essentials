@@ -42,5 +42,45 @@ class NN:
 
         return self.a3
     
-    
+    # Backward Propagation
+    def backward_pass(self, X, y, y_pred):
+        m = y.shape[0]
+        print(m)
+        y = y.reshape(-1, 1)  # Change y shape from (500,) to (500, 1)
+
+        #dz3 means dL/dz3 that is derivative of z3 wrt. loss/cost function
+        dz3 = y_pred - y # Difference between predicted probability and true label
+        print(dz3.shape)
+
+        self.dw3 = np.matmul(self.a2.T, dz3) / m
+        print(self.dw3.shape)
+
+        self.db3 = np.sum(dz3, axis=0, keepdims=True)
+        print(self.db3.shape)
+
+        dz2 = np.matmul(dz3, self.W3.T) * (self.a2 * (1 - self.a2)) # Derivative of sigmoid
+        self.dw2 = np.dot(self.a1.T, dz2) / m
+        self.db2 = np.sum(dz2, axis=0, keepdims=True) / m
+
+        print(dz2.shape)
+        print(self.dw2.shape)
+        print(self.db2.shape)
+
+        dz1 = np.dot(dz2, self.W2.T) * (self.a1 * (1 - self.a1))  # Derivative of sigmoid
+        self.dw1 = np.dot(X.T, dz1) / m
+        self.db1 = np.sum(dz1, axis=0, keepdims=True) / m
+
+        self.update_params()
+
+    def update_params(self):
+        self.w3 -= self.learning_rate * self.dw3
+        self.w2 -= self.learning_rate * self.dw2
+        self.w1 -= self.learning_rate * self.dw1
+
+        self.b3 -= self.learning_rate * self.db3
+        self.b2 -= self.learning_rate * self.db2
+        self.b1 -= self.learning_rate * self.db1
+
+
+
 
