@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import numpy as np
 
-class AnimationTraining:
+class AnimateTraining:
     def __init__(self, nn, X, y, real_time=True):
         self.nn = nn
         self.X = X
@@ -14,23 +15,24 @@ class AnimationTraining:
         self.dW_history = [[] for _ in range(3)]
         self.db_history = [[] for _ in range(3)]
 
-        self.fig, self.axes = plt.subplots(2, 2, figsize=(15, 12))
-        self.fig.suptitle('Neural Network Training Visualization', fontsize=16)
+        # Decrease the figure size
+        self.fig, self.axes = plt.subplots(2, 2, figsize=(12, 10))
+        self.fig.suptitle('Neural Network Training Visualization', fontsize=14)
 
         self.initialize_plots()
 
     def initialize_plots(self):
-        self.axes[0, 0].set_title("Loss", fontsize=14)
-        self.axes[0, 0].set_xlabel("Epochs", fontsize=12)
-        self.axes[0, 0].set_ylabel("Loss", fontsize=12)
+        self.axes[0, 0].set_title("Loss", fontsize=12)
+        self.axes[0, 0].set_xlabel("Epochs", fontsize=10)
+        self.axes[0, 0].set_ylabel("Loss", fontsize=10)
         self.loss_line, = self.axes[0, 0].plot([], [], 'r-')
 
         titles = ["Weights", "Biases", "Gradients"]
         colors = ['r', 'g', 'b']
         
         for i, (ax, title) in enumerate(zip(self.axes.flat[1:], titles)):
-            ax.set_title(title, fontsize=14)
-            ax.set_xlabel("Epochs", fontsize=12)
+            ax.set_title(title, fontsize=12)
+            ax.set_xlabel("Epochs", fontsize=10)
             for j in range(3):
                 if i < 2:
                     line, = ax.plot([], [], f'{colors[j]}-', label=f'Layer {j+1}')
@@ -40,12 +42,10 @@ class AnimationTraining:
                     b_line, = ax.plot([], [], f'{colors[j]}--', label=f'db_{j+1}')
                     setattr(self, f'dw{j+1}_line', w_line)
                     setattr(self, f'db{j+1}_line', b_line)
-            ax.legend(fontsize=10)
+            ax.legend(fontsize=8)
 
         for ax in self.axes.flat:
-            ax.tick_params(axis='both', which='major', labelsize=10)
-            ax.set_xlim(0, 1000)
-            ax.set_ylim(-1, 1)
+            ax.tick_params(axis='both', which='major', labelsize=8)
 
     def update_plot_data(self, epoch, loss):
         self.loss_history.append(loss)
@@ -64,13 +64,31 @@ class AnimationTraining:
             getattr(self, f'dw{i+1}_line').set_data(range(len(self.dW_history[i])), self.dW_history[i])
             getattr(self, f'db{i+1}_line').set_data(range(len(self.db_history[i])), self.db_history[i])
 
-        for ax in self.axes.flat:
-            ax.set_xlim(0, max(1000, epoch))
-            ax.relim()
-            ax.autoscale_view()
+        self.autoscale_plots(epoch)
 
         if self.real_time:
             self.fig.canvas.draw()
+
+    def autoscale_plots(self, epoch):
+        # Autoscale x-axis
+        for ax in self.axes.flat:
+            ax.set_xlim(0, max(10, epoch))
+
+        # Autoscale y-axis for each plot
+        y_data = [
+            self.loss_history,
+            np.concatenate(self.W_history),
+            np.concatenate(self.b_history),
+            np.concatenate(self.dW_history + self.db_history)
+        ]
+
+        for ax, data in zip(self.axes.flat, y_data):
+            if len(data) > 0:
+                ymin, ymax = np.min(data), np.max(data)
+                yrange = ymax - ymin
+                ax.set_ylim(ymin - 0.1 * yrange, ymax + 0.1 * yrange)
+
+        self.fig.tight_layout()
 
     def animate(self, epochs, interval=100):
         def update(epoch):

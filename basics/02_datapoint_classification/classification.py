@@ -1,7 +1,7 @@
 from spiral_datapoint import SpiralData
 import numpy as np
 from nn import NN
-from animation import AnimationTraining
+from animation import AnimateTraining
 
 np.random.seed(42)
 # Create an instance of SpiralData
@@ -25,9 +25,9 @@ output_size = 1
 
 network = NN(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.001)
 
-animator = AnimationTraining(network, X, y, real_time=False)
+animator = AnimateTraining(network, X, y, real_time=True)
 
 # Perform training and animate the process
-animator.animate(epochs=1000, interval=100)
+animator.animate(epochs=300, interval=100)
 
 #network.train(X, y, epochs=1000)
