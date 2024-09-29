@@ -1,5 +1,6 @@
 import numpy as np
 import pickle, os
+import matplotlib.pyplot as plt
 from spiral_datapoint import SpiralData
 from nn import NN
 
@@ -17,6 +18,22 @@ def load_model():
         return model_data
     else:
         raise FileNotFoundError(f"No saved model found at {file_path}.")
+
+# Function to plot test points with their predicted classes
+def plot_predictions(X, y_pred_class):
+    plt.figure(figsize=(6, 6))
+
+    # Plot points predicted as class 0
+    plt.scatter(X[y_pred_class[:, 0] == 0][:, 0], X[y_pred_class[:, 0] == 0][:, 1], color='blue', label='Class 0')
+
+    # Plot points predicted as class 1
+    plt.scatter(X[y_pred_class[:, 0] == 1][:, 0], X[y_pred_class[:, 0] == 1][:, 1], color='red', label='Class 1')
+
+    plt.title("Test Data with Predicted Classes")
+    plt.xlabel("Feature 1")
+    plt.ylabel("Feature 2")
+    plt.legend()
+    plt.show()
 
 # Load model weights and biases
 model_data = load_model()
@@ -57,3 +74,6 @@ y_pred_class = (y_pred > 0.5).astype(int)
 accuracy = np.mean(y_pred_class == y_test) * 100
 print(f"Test Accuracy: {accuracy:.2f}%")
 
+test_data.plot_data()
+# Plot test points with predicted classes
+plot_predictions(X_test, y_pred_class)
