@@ -108,6 +108,8 @@ class NN:
             if epoch % 100 == 0:
                 loss = self.calculate_loss(y, y_pred)
                 print(f'Epoch {epoch}, Loss: {loss:.4f}')
+                #print(self.dw2)
+
 
 
 
