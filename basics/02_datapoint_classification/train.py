@@ -22,7 +22,7 @@ y = y.reshape(-1, 1)
 
 # Neural Network Architecture
 input_size = 2
-hidden1_size = 8
+hidden1_size = 18
 hidden2_size = 4
 output_size = 1
 

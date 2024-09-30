@@ -4,7 +4,7 @@ import torch.optim as optim
 import pickle, os
 
 # Set seed for reproducibility
-torch.manual_seed(41)  # You can choose any integer value here
+torch.manual_seed(41)
 
 # Neural network for desired architecture, created using PyTorch
 class NN_torch(nn.Module):
