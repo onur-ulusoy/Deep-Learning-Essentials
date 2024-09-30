@@ -5,12 +5,18 @@ import pickle, os
 class NN:
     def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate = 0.01):
         self.learning_rate = learning_rate
-        self.W1 = np.random.rand(input_size, hidden1_size)*0.01
-        self.b1 = np.random.rand(1, hidden1_size)
+        """ self.W1 = np.random.rand(input_size, hidden1_size)*0.01
         self.W2 = np.random.rand(hidden1_size, hidden2_size)*0.01
+        self.W3 = np.random.rand(hidden2_size, output_size)*0.01 """
+
+        self.b1 = np.random.rand(1, hidden1_size)
         self.b2 = np.random.rand(1, hidden2_size)
-        self.W3 = np.random.rand(hidden2_size, output_size)*0.01
         self.b3 = np.random.rand(1, output_size)
+
+        # applying Xavier or He initialization:
+        self.W1 = self.xavier_init(input_size, hidden1_size)
+        self.W2 = self.xavier_init(hidden1_size, hidden2_size)
+        self.W3 = self.xavier_init(hidden2_size, output_size)  # For sigmoid layer
 
         print("W1 shape: ", self.W1.shape)
         print("b1 shape: ", self.b1.shape)
@@ -31,7 +37,19 @@ class NN:
     
     def relu_derivative(self, z):
         return np.where(z > 0, 1, 0)
+
+    def leaky_relu(self, z, alpha=0.01):
+        return np.where(z > 0, z, z * alpha)
+
+    def leaky_relu_derivative(self, z, alpha=0.01):
+        return np.where(z > 0, 1, alpha)
     
+    def xavier_init(self, size_in, size_out):
+        return np.random.randn(size_in, size_out) * np.sqrt(1 / size_in)
+
+    def he_init(self, size_in, size_out):
+        return np.random.randn(size_in, size_out) * np.sqrt(2 / size_in)
+            
     # Forward Propagation
     def forward_pass(self, X):
         self.z1 = np.matmul(X, self.W1) + self.b1
