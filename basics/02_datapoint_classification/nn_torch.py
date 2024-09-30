@@ -3,6 +3,9 @@ import torch.nn as nn
 import torch.optim as optim
 import pickle, os
 
+# Set seed for reproducibility
+torch.manual_seed(41)  # You can choose any integer value here
+
 # Neural network for desired architecture, created using PyTorch
 class NN_torch(nn.Module):
     def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.01):
@@ -60,4 +63,24 @@ class NN_torch(nn.Module):
             if epoch % 100 == 0:
                 print(f'Epoch {epoch}, Loss: {loss.item():.4f}')
 
+        self.save_model()
+
+    # Save model's weights and biases
+    def save_model(self):
+        model_data = {
+            'fc1_weight': self.fc1.weight.data,
+            'fc1_bias': self.fc1.bias.data,
+            'fc2_weight': self.fc2.weight.data,
+            'fc2_bias': self.fc2.bias.data,
+            'fc3_weight': self.fc3.weight.data,
+            'fc3_bias': self.fc3.bias.data
+        }
+
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, 'trained_model_torch.pkl')
+
+        with open(file_path, 'wb') as f:
+            pickle.dump(model_data, f)
+
+        print(f"Model weights and biases saved successfully at {file_path}.")
     
