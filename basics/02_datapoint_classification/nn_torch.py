@@ -4,9 +4,9 @@ import torch.optim as optim
 import pickle, os
 
 # Neural network for desired architecture, created using PyTorch
-class NN_torch(nn.modules):
+class NN_torch(nn.Module):
     def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.01):
-        super(NN_torch.self).__init__()
+        super(NN_torch, self).__init__()
         self.learning_rate = learning_rate
 
         # Xavier initialization is default in nn.Linear, so we don't need to manually initialize.
@@ -32,14 +32,16 @@ class NN_torch(nn.modules):
         z3 = self.fc3(self.a2)
         self.a3 = self.sigmoid(z3)
 
+        return self.a3
+
     
     def train_model(self, X_train, y_train, epochs = 1000):
         X_train = torch.tensor(X_train, dtype=torch.float32)
         y_train = torch.tensor(y_train, dtype=torch.float32)
 
-        for epoch in epochs:
+        for epoch in range(epochs):
             # forward pass
-            y_pred = self.forward()
+            y_pred = self.forward(X_train)
 
             #calculate loss
             loss = self.criterion(y_pred, y_train)
