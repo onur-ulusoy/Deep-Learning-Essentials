@@ -37,18 +37,25 @@ class NN_torch(nn.modules):
         X_train = torch.tensor(X_train, dtype=torch.float32)
         y_train = torch.tensor(y_train, dtype=torch.float32)
 
-        # forward pass
-        y_pred = self.forward()
+        for epoch in epochs:
+            # forward pass
+            y_pred = self.forward()
 
-        #calculate loss
-        loss = self.criterion(y_pred, y_train)
+            #calculate loss
+            loss = self.criterion(y_pred, y_train)
 
-        # Backward pass
-        loss.backward()
+            # Backward pass
+            loss.backward()
 
-        # Update params
-        with torch.no_grad():
-            for param in self.parameters():
-                param -= self.learning_rate * param.grad
+            # Update params
+            with torch.no_grad():
+                for param in self.parameters():
+                    param -= self.learning_rate * param.grad
 
-        self.zero_grad()
+            self.zero_grad()
+
+            # Print the loss every 100 epochs
+            if epoch % 100 == 0:
+                print(f'Epoch {epoch}, Loss: {loss.item():.4f}')
+
+    
