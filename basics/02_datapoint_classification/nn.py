@@ -72,7 +72,7 @@ class NN:
         m = y.shape[0]
         """ print(m) """
 
-        #dz3 means dL/dz3 that is derivative of z3 wrt. loss/cost function
+        #dz3 means dL/dz3 that is derivative of loss/cost function wrt z3. 
         dz3 = y_pred - y  # Difference between predicted probability and true label
         #print(y.T)
 
