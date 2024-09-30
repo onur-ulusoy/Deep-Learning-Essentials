@@ -20,3 +20,35 @@ class NN_torch(nn.modules):
 
         # Binary Cross-Entropy Loss for binary classification
         self.criterion = nn.BCELoss()
+
+    # Forward propagation
+    def forward(self, X):
+        z1 = self.fc1(X)
+        self.a1 = self.relu(z1)
+
+        z2 = self.fc2(self.a1)
+        self.a2 = self.relu(z2)
+
+        z3 = self.fc3(self.a2)
+        self.a3 = self.sigmoid(z3)
+
+    
+    def train_model(self, X_train, y_train, epochs = 1000):
+        X_train = torch.tensor(X_train, dtype=torch.float32)
+        y_train = torch.tensor(y_train, dtype=torch.float32)
+
+        # forward pass
+        y_pred = self.forward()
+
+        #calculate loss
+        loss = self.criterion(y_pred, y_train)
+
+        # Backward pass
+        loss.backward()
+
+        # Update params
+        with torch.no_grad():
+            for param in self.parameters():
+                param -= self.learning_rate * param.grad
+
+        self.zero_grad()
