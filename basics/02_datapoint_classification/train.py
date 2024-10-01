@@ -26,16 +26,18 @@ hidden1_size = 18
 hidden2_size = 4
 output_size = 1
 
-#network = NN(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.001)
+np.random.seed(42)
+network = NN(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.1)
 
-network = NN_torch(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.1)
+network_torch = NN_torch(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.1, seed= 41)
 
-network.train_model(X,y,epochs=1000)
-network.plot_training()
+#network.train_model(X,y,epochs=1000)
+#network.plot_training()
 
-#animator = AnimateTraining(network, X, y, real_time=False)
-
+""" animator = AnimateTraining(network, X, y, real_time=False)
 # Perform training and animate the process
-#animator.animate(epochs=1000, interval=100)
-
+animator.animate(epochs=1000, interval=100)
+ """
+network_torch.train_model(X,y,epochs=1000)
+network_torch.plot_training()
 #network.train(X, y, epochs=1000)

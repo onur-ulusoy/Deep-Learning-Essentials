@@ -5,11 +5,12 @@ import pickle, os
 import matplotlib.pyplot as plt
 
 # Set seed for reproducibility
-torch.manual_seed(41)
+#torch.manual_seed(41)
 
 # Neural network for desired architecture, created using PyTorch
 class NN_torch(nn.Module):
-    def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.01):
+    def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.01, seed=42):
+        torch.manual_seed(seed)
         super(NN_torch, self).__init__()
         self.learning_rate = learning_rate
 

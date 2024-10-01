@@ -14,8 +14,8 @@ class NN:
         self.b3 = np.random.rand(1, output_size)
 
         # applying Xavier or He initialization:
-        self.W1 = self.xavier_init(input_size, hidden1_size)
-        self.W2 = self.xavier_init(hidden1_size, hidden2_size)
+        self.W1 = self.he_init(input_size, hidden1_size)
+        self.W2 = self.he_init(hidden1_size, hidden2_size)
         self.W3 = self.xavier_init(hidden2_size, output_size)  # For sigmoid layer
 
         print("W1 shape: ", self.W1.shape)
