@@ -29,6 +29,10 @@ class NN_torch(nn.Module):
         self.loss_history = []
         self.weights_history = [[] for _ in range(3)]
         self.biases_history = [[] for _ in range(3)]
+        # To store gradients history
+        self.grad_weights_history = [[] for _ in range(3)]
+        self.grad_biases_history = [[] for _ in range(3)]
+
 
     # Forward propagation
     def forward(self, X):
@@ -53,21 +57,12 @@ class NN_torch(nn.Module):
             y_pred = self.forward(X_train)
 
             #calculate loss
-            loss = self.criterion(y_pred, y_train)
-
-            # Append loss to history
-            self.loss_history.append(loss.item())   
-
-            # Store weights and biases history for plotting
-            self.weights_history[0].append(self.fc1.weight.data.mean().item())
-            self.weights_history[1].append(self.fc2.weight.data.mean().item())
-            self.weights_history[2].append(self.fc3.weight.data.mean().item())
-            self.biases_history[0].append(self.fc1.bias.data.mean().item())
-            self.biases_history[1].append(self.fc2.bias.data.mean().item())
-            self.biases_history[2].append(self.fc3.bias.data.mean().item())
+            self.loss = self.criterion(y_pred, y_train)
 
             # Backward pass
-            loss.backward()
+            self.loss.backward()
+
+            self.store_history()
 
             # Update params
             with torch.no_grad():
@@ -78,7 +73,7 @@ class NN_torch(nn.Module):
 
             # Print the loss every 100 epochs
             if epoch % 100 == 0:
-                print(f'Epoch {epoch}, Loss: {loss.item():.4f}')
+                print(f'Epoch {epoch}, Loss: {self.loss.item():.4f}')
 
         self.save_model()
 
@@ -121,12 +116,43 @@ class NN_torch(nn.Module):
         axs[1, 0].set_xlabel("Epochs")
         axs[1, 0].set_ylabel("Bias Values")
 
-        # Leave bottom-right plot empty for now (can use it for future data)
-        axs[1, 1].axis('off')
+        # Plot gradients for each layer
+        for i in range(3):
+            if len(self.grad_weights_history[i]) == epochs:  # Ensure history is filled
+                axs[1, 1].plot(range(epochs), self.grad_weights_history[i], label=f'Layer {i+1} dW')
+            if len(self.grad_biases_history[i]) == epochs:  # Ensure history is filled
+                axs[1, 1].plot(range(epochs), self.grad_biases_history[i], '--', label=f'Layer {i+1} dB')
+
+        # Only show legend if there are valid plots
+        if any(len(self.grad_weights_history[i]) == epochs for i in range(3)):
+            axs[1, 1].legend()
+
+        axs[1, 1].set_title("Gradients (Weights and Biases)")
+        axs[1, 1].set_xlabel("Epochs")
+        axs[1, 1].set_ylabel("Gradient Values")
 
         plt.tight_layout()
         plt.show()
 
+    def store_history(self):
+        # Append loss to history
+        self.loss_history.append(self.loss.item())   
+
+        # Store weights and biases history for plotting
+        self.weights_history[0].append(self.fc1.weight.data.mean().item())
+        self.weights_history[1].append(self.fc2.weight.data.mean().item())
+        self.weights_history[2].append(self.fc3.weight.data.mean().item())
+        self.biases_history[0].append(self.fc1.bias.data.mean().item())
+        self.biases_history[1].append(self.fc2.bias.data.mean().item())
+        self.biases_history[2].append(self.fc3.bias.data.mean().item())
+
+        # Store gradients for weights and biases for plotting
+        self.grad_weights_history[0].append(self.fc1.weight.grad.data.mean().item())
+        self.grad_weights_history[1].append(self.fc2.weight.grad.data.mean().item())
+        self.grad_weights_history[2].append(self.fc3.weight.grad.data.mean().item())
+        self.grad_biases_history[0].append(self.fc1.bias.grad.data.mean().item())
+        self.grad_biases_history[1].append(self.fc2.bias.grad.data.mean().item())
+        self.grad_biases_history[2].append(self.fc3.bias.grad.data.mean().item())
 
     # Save model's weights and biases
     def save_model(self):
