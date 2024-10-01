@@ -28,7 +28,13 @@ model = NeuralNetwork()
 
 # Define input
 torch.manual_seed(42)
-X_torch = torch.randn(1, 2)  # 1 sample, 2 features
+sample_size = 2
+X_torch = torch.randn(sample_size, 2)  # n sample, 2 features
+# True labels for the input
+y_true = np.ones((sample_size, 1))
+
+print("X_torch:", X_torch)
+print("y_true:", y_true)
 
 
 """ Forward Pass Comparison """
@@ -108,9 +114,6 @@ def backward_pass_numpy(X, y, y_pred, W1, W2, W3, a1, a2):
 
     return dw1, db1, dw2, db2, dw3, db3
 
-# True labels for the input
-y_true = np.array([[1]])
-
 # Compute the loss in NumPy
 loss_numpy = binary_cross_entropy(y_true, a3_numpy)
 print("NumPy Loss:", loss_numpy)
@@ -187,11 +190,11 @@ W1_new_numpy, b1_new_numpy, W2_new_numpy, b2_new_numpy, W3_new_numpy, b3_new_num
     W1, b1, W2, b2, W3, b3, dw1_numpy.T, db1_numpy, dw2_numpy.T, db2_numpy, dw3_numpy.T, db3_numpy, learning_rate
 )
 
-# Now let's update the parameters in PyTorch using an optimizer
+""" # Now let's update the parameters in PyTorch using an optimizer
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
 # Perform the parameter update step in PyTorch
-optimizer.step()
+optimizer.step() """
 
 # Extract updated PyTorch parameters
 W1_new_torch = model.fc1.weight.detach().numpy()
