@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import pickle, os
+import matplotlib.pyplot as plt
 
 # Set seed for reproducibility
 torch.manual_seed(41)
@@ -23,6 +24,11 @@ class NN_torch(nn.Module):
 
         # Binary Cross-Entropy Loss for binary classification
         self.criterion = nn.BCELoss()
+
+        # To store training history
+        self.loss_history = []
+        self.weights_history = [[] for _ in range(3)]
+        self.biases_history = [[] for _ in range(3)]
 
     # Forward propagation
     def forward(self, X):
@@ -49,6 +55,17 @@ class NN_torch(nn.Module):
             #calculate loss
             loss = self.criterion(y_pred, y_train)
 
+            # Append loss to history
+            self.loss_history.append(loss.item())   
+
+            # Store weights and biases history for plotting
+            self.weights_history[0].append(self.fc1.weight.data.mean().item())
+            self.weights_history[1].append(self.fc2.weight.data.mean().item())
+            self.weights_history[2].append(self.fc3.weight.data.mean().item())
+            self.biases_history[0].append(self.fc1.bias.data.mean().item())
+            self.biases_history[1].append(self.fc2.bias.data.mean().item())
+            self.biases_history[2].append(self.fc3.bias.data.mean().item())
+
             # Backward pass
             loss.backward()
 
@@ -64,6 +81,52 @@ class NN_torch(nn.Module):
                 print(f'Epoch {epoch}, Loss: {loss.item():.4f}')
 
         self.save_model()
+
+    def plot_training(self):
+        epochs = len(self.loss_history)
+
+        fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+        fig.suptitle('Training Progress', fontsize=16)
+
+        # Plot loss over epochs
+        axs[0, 0].plot(range(epochs), self.loss_history, 'r', label="Loss")
+        axs[0, 0].set_title("Loss")
+        axs[0, 0].set_xlabel("Epochs")
+        axs[0, 0].set_ylabel("Loss")
+        axs[0, 0].legend()  # Add a legend for the loss plot
+
+        # Plot weights for each layer
+        for i in range(3):
+            if len(self.weights_history[i]) == epochs:  # Ensure history is filled
+                axs[0, 1].plot(range(epochs), self.weights_history[i], label=f'Layer {i+1} Weights')
+
+        # Only show legend if there are valid plots
+        if any(len(self.weights_history[i]) == epochs for i in range(3)):
+            axs[0, 1].legend()
+
+        axs[0, 1].set_title("Weights")
+        axs[0, 1].set_xlabel("Epochs")
+        axs[0, 1].set_ylabel("Weight Values")
+
+        # Plot biases for each layer
+        for i in range(3):
+            if len(self.biases_history[i]) == epochs:  # Ensure history is filled
+                axs[1, 0].plot(range(epochs), self.biases_history[i], label=f'Layer {i+1} Biases')
+
+        # Only show legend if there are valid plots
+        if any(len(self.biases_history[i]) == epochs for i in range(3)):
+            axs[1, 0].legend()
+
+        axs[1, 0].set_title("Biases")
+        axs[1, 0].set_xlabel("Epochs")
+        axs[1, 0].set_ylabel("Bias Values")
+
+        # Leave bottom-right plot empty for now (can use it for future data)
+        axs[1, 1].axis('off')
+
+        plt.tight_layout()
+        plt.show()
+
 
     # Save model's weights and biases
     def save_model(self):
@@ -83,4 +146,3 @@ class NN_torch(nn.Module):
             pickle.dump(model_data, f)
 
         print(f"Model weights and biases saved successfully at {file_path}.")
-    

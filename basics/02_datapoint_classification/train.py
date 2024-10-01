@@ -30,7 +30,8 @@ output_size = 1
 
 network = NN_torch(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.1)
 
-network.train_model(X,y,epochs=10000)
+network.train_model(X,y,epochs=1000)
+network.plot_training()
 
 #animator = AnimateTraining(network, X, y, real_time=False)
 
