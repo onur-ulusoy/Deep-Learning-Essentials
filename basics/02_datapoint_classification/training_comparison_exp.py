@@ -47,6 +47,7 @@ print("PyTorch output:", output_torch)
 # Extracting weights and biases from PyTorch model
 W1 = model.fc1.weight.detach().numpy()  # Shape: (18, 2)
 b1 = model.fc1.bias.detach().numpy()    # Shape: (18,)
+b1_old = b1
 W2 = model.fc2.weight.detach().numpy()  # Shape: (4, 18)
 b2 = model.fc2.bias.detach().numpy()    # Shape: (4,)
 W3 = model.fc3.weight.detach().numpy()  # Shape: (1, 4)
@@ -129,6 +130,8 @@ y_true_torch = torch.tensor(y_true, dtype=torch.float32)
 loss_torch = criterion(output_torch, y_true_torch)
 print("PyTorch Loss:", loss_torch.item())
 
+model.zero_grad()
+
 # Perform backpropagation in PyTorch
 loss_torch.backward()
 
@@ -145,10 +148,18 @@ loss_diff = np.abs(loss_numpy - loss_torch.item())
 print("Difference in Loss:", loss_diff)
 
 # Compare gradients for each layer
+print(dw1_numpy.shape)
+print(dw1_numpy)
+print(dw1_torch.shape)
+print(dw1_torch)
 
 # Layer 1 gradients comparison
 dw1_diff = np.linalg.norm(dw1_numpy.T - dw1_torch)
 db1_diff = np.linalg.norm(db1_numpy - db1_torch)
+print("db1 shape\n", db1_numpy.shape, "\n")
+print("db1 numpy:", db1_numpy)
+print("db1 torch:", db1_torch)
+
 print("Difference in dw1:", dw1_diff)
 print("Difference in db1:", db1_diff)
 
@@ -175,20 +186,24 @@ learning_rate = 0.01
 
 # Function to update parameters in NumPy
 def update_params_numpy(W1, b1, W2, b2, W3, b3, dw1, db1, dw2, db2, dw3, db3, learning_rate):
-    W3 -= learning_rate * dw3
-    W2 -= learning_rate * dw2
-    W1 -= learning_rate * dw1
+    W3_new_numpy = W3 - learning_rate * dw3
+    W2_new_numpy = W2 - learning_rate * dw2
+    W1_new_numpy = W1 - learning_rate * dw1
 
-    b3 -= learning_rate * db3.reshape(b3.shape)  # Reshape db3 to match b3
-    b2 -= learning_rate * db2.reshape(b2.shape)  # Reshape db2 to match b2
-    b1 -= learning_rate * db1.reshape(b1.shape)  # Reshape db1 to match b1
+    b3_new_numpy = b3 - learning_rate * db3.reshape(b3.shape)  # Reshape db3 to match b3
+    b2_new_numpy = b2 - learning_rate * db2.reshape(b2.shape)  # Reshape db2 to match b2
+    b1_new_numpy = b1 - learning_rate * db1.reshape(b1.shape)  # Reshape db1 to match b1
 
-    return W1, b1, W2, b2, W3, b3
+    return W1_new_numpy, b1_new_numpy, W2_new_numpy, b2_new_numpy, W3_new_numpy, b3_new_numpy
 
 # Update parameters in NumPy
 W1_new_numpy, b1_new_numpy, W2_new_numpy, b2_new_numpy, W3_new_numpy, b3_new_numpy = update_params_numpy(
     W1, b1, W2, b2, W3, b3, dw1_numpy.T, db1_numpy, dw2_numpy.T, db2_numpy, dw3_numpy.T, db3_numpy, learning_rate
 )
+
+print("b1 old: ", b1_old)
+
+print("b1 new np:", b1_new_numpy)
 
 """ # Now let's update the parameters in PyTorch using an optimizer
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
@@ -203,6 +218,7 @@ W2_new_torch = model.fc2.weight.detach().numpy()
 b2_new_torch = model.fc2.bias.detach().numpy()
 W3_new_torch = model.fc3.weight.detach().numpy()
 b3_new_torch = model.fc3.bias.detach().numpy()
+print("b1 new torch:", b1_new_torch)
 
 # Compare updated parameters between NumPy and PyTorch
 
