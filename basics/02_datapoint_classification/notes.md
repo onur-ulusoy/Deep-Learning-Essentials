@@ -61,3 +61,24 @@ During testing, we also achieved an accuracy of **98.75%** on 40 test data point
 
 
 
+## What I Learned
+
+- **Neural Network Fundamentals**: Gained a solid understanding of building neural networks from scratch, including implementing layers, activation functions, and backpropagation using NumPy.
+  
+- **Activation Function Choices**: Learned the importance of choosing appropriate activation functions for different layers. Experimented with ReLU, sigmoid, softmax, and leaky ReLU to understand their impact on network performance.
+
+- **Hyperparameter Tuning**: Explored how different configurations of neurons, layer sizes, and learning rates affect training outcomes. Used TensorFlow Playground to visualize and better understand these relationships.
+
+- **Vanishing Gradient Problem**: Researched about vanishing gradient issues when gradients became too small, causing training to stall. This led to experimentation with leaky ReLU and further research into gradient behavior.
+
+- **Custom vs Framework Implementation**: Discovered differences between manually implemented neural networks and those built with frameworks (PyTorch). While both networks used the same architecture, I encountered bugs in my custom implementation that PyTorch handled correctly.
+
+- **Debugging Neural Networks**: Learned effective debugging techniques for neural networks, such as isolating issues by comparing results from both custom and PyTorch networks, and performing detailed inspections of weights, biases, and gradients.
+
+- **Bias Update in Backpropagation**: Identified a mistake in bias updates in my custom implementation, where I initially forgot to divide the bias updates by the sample size. Correcting this bug significantly improved the model’s performance.
+
+- **Importance of Initialization**: Realized how crucial proper weight and bias initialization is for training performance, especially in the absence of advanced techniques like batch normalization or learning rate optimization. Training outcomes varied significantly depending on the random seed used.
+
+- **PyTorch Experience**: Gained hands-on experience with PyTorch, learning how to leverage its built-in functionalities for faster and more reliable model development compared to custom implementations.
+
+- **Future Enhancements**: Recognized the need for additional features such as batch normalization and learning rate optimization, which I plan to implement in future projects to improve training stability and performance.
