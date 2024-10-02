@@ -29,5 +29,35 @@ Due to the lack of batch normalization and learning rate optimization, the train
 
 
 ## Results
+I added a PyTorch neural network class to the custom neural network script to initialize weights and biases similarly in order to ensure consistent results across both implementations by using the same random seeds.
+
+We used spiral data with the following parameters: `num_points=40`, `noise=0.2`, and `revolutions=4`. In total, we generated 500 points (250 red, 250 blue) for each training phase.
+
+We plotted several results:
+1. Binary Cross-Entropy (CE) Loss
+2. Weights
+3. Biases
+4. Gradients
+
+To represent weights, biases, and gradients in a 2D plot with a single scalar value, we applied the operation: `weight.data.mean().item()`. This operation computes the mean of the weight and bias values and retrieves the result as a scalar to simplify visualization.
+
+### Custom Neural Network Results
+In the custom neural network, we achieved a loss of **0.0195** after 10,000 epochs.
+
+![Custom Neural Network Training](img/nn_training.png)
+
+During testing, we achieved an accuracy of **98.75%** on 40 test data points.
+
+![Custom Neural Network Test Results](img/nn_results.png)
+
+### PyTorch Neural Network Results
+In the PyTorch neural network, we achieved a loss of **0.0185** after 10,000 epochs.
+
+![PyTorch Neural Network Training](img/nn_torch_training.png)
+
+During testing, we also achieved an accuracy of **98.75%** on 40 test data points.
+
+![PyTorch Neural Network Test Results](img/nn_torch_results.png)
+
 
 
