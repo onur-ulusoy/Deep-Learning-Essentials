@@ -14,3 +14,16 @@ I developed several scripts for this project:
 - `training_comparison_exp.py`: An experimental script designed to explore the differences between the custom (NumPy-based) and Torch-based implementations of the training scripts.
 
 
+## Experiences & Difficulties I Encountered
+I began by developing a NumPy-based neural network, implementing the components for training step by step, based on my research and literature review. Since most resources recommend using ReLU for hidden layers and sigmoid for output layers, I applied these activations. Additionally, I experimented with using sigmoid in the hidden layers and softmax at the output. I also tested leaky ReLU when I suspected a vanishing gradient issue, as gradients were diminishing too quickly.
+
+I determined the size of neurons and layers through experimentation. I used [TensorFlow Playground](https://playground.tensorflow.org/) to help decide these parameters, particularly focusing on how different neuron structures could approximate various levels of functional complexity. This process helped me refine my development.
+
+Initially, my custom neural network did not work as expected. It consistently got stuck with a binary cross-entropy loss around 0.6-0.7 when using learning rates between 0.01 and 0.1. For learning rates above 0.1, the loss did not decrease at all. Gradients were diminishing too rapidly, causing the system to stop learning. Instead of blue data points converging to 0 and red to 1, all predictions were centered around 0.5. I was convinced that this was due to a vanishing gradient issue and researched extensively to resolve it.
+
+To further investigate, I implemented the same algorithm using PyTorch to see if the problem persisted. Surprisingly, the PyTorch version worked on the first attempt, suggesting that the issue was not related to vanishing gradients, as the same logic worked in PyTorch. This indicated that there was a mistake in my custom implementation.
+
+I then created a comparison experiment script to run both the custom and PyTorch implementations for one epoch to identify the differences in results. I thoroughly examined PyTorch's weight and bias initialization, forward and backward propagation, and parameter updates. By printing and analyzing the results, I discovered that while there was no difference with a single sample, as the sample size increased, the bias differences grew proportionally to the number of samples. Upon reviewing the backpropagation algorithm, I realized that I had forgotten to divide the bias gradients by the sample size. After correcting this, the custom neural network started functioning correctly.
+
+Due to the lack of batch normalization and learning rate optimization, the training process remains highly dependent on initialization. As a result, the outcome varies depending on the random seed used. In future problems, I plan to implement these features based on the insights and experiences gained from this work.
+
