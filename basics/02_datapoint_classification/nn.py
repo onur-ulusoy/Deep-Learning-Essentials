@@ -1,11 +1,14 @@
 import numpy as np
 import pickle, os
+#import torch
+#import torch.nn as nn
 
 # Neural network for desired architecture, created using only numpy
 class NN:
     def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate = 0.01):
         self.learning_rate = learning_rate
-        """ self.W1 = np.random.rand(input_size, hidden1_size)*0.01
+        """ basic initialization
+        self.W1 = np.random.rand(input_size, hidden1_size)*0.01
         self.W2 = np.random.rand(hidden1_size, hidden2_size)*0.01
         self.W3 = np.random.rand(hidden2_size, output_size)*0.01 """
 
@@ -17,6 +20,22 @@ class NN:
         self.W1 = self.he_init(input_size, hidden1_size)
         self.W2 = self.he_init(hidden1_size, hidden2_size)
         self.W3 = self.xavier_init(hidden2_size, output_size)  # For sigmoid layer
+
+        """ torch initialization
+        torch.manual_seed(41)
+        nn_model = SimpleNeuralNetwork()
+
+        # Retrieve the weights and biases as NumPy arrays
+        self.W1 = nn_model.fc1.weight.detach().numpy().T
+        self.b1 = nn_model.fc1.bias.detach().numpy().reshape(1, hidden1_size)
+
+        self.W2 = nn_model.fc2.weight.detach().numpy().T
+        self.b2 = nn_model.fc2.bias.detach().numpy().reshape(1, hidden2_size)
+
+        self.W3 = nn_model.fc3.weight.detach().numpy().T
+        self.b3 = nn_model.fc3.bias.detach().numpy().reshape(1, output_size) """
+
+
 
         print("W1 shape: ", self.W1.shape)
         print("b1 shape: ", self.b1.shape)
@@ -77,7 +96,7 @@ class NN:
         #print(y.T)
 
         self.dw3 = np.matmul(self.a2.T, dz3) / m
-        self.db3 = np.sum(dz3, axis=0, keepdims=True)
+        self.db3 = np.sum(dz3, axis=0, keepdims=True) / m
 
         """ print(dz3.shape)
         print(self.dw3.shape)
@@ -85,7 +104,7 @@ class NN:
 
         dz2 = np.matmul(dz3, self.W3.T) * self.relu_derivative(self.a2)  # Derivative of ReLU
         self.dw2 = np.matmul(self.a1.T, dz2) / m
-        self.db2 = np.sum(dz2, axis=0, keepdims=True)
+        self.db2 = np.sum(dz2, axis=0, keepdims=True) / m
 
         """ print(dz2.shape)
         print(self.dw2.shape)
@@ -93,7 +112,7 @@ class NN:
 
         dz1 = np.matmul(dz2, self.W2.T) * self.relu_derivative(self.a1)  # Derivative of ReLU
         self.dw1 = np.matmul(X.T, dz1) / m
-        self.db1 = np.sum(dz1, axis=0, keepdims=True)
+        self.db1 = np.sum(dz1, axis=0, keepdims=True) / m
 
         self.update_params()
 
@@ -144,6 +163,18 @@ class NN:
         
         print(f"Model weights and biases saved successfully at {file_path}.")
 
+""" class SimpleNeuralNetwork(nn.Module):
+    def __init__(self):
+        super(SimpleNeuralNetwork, self).__init__()
+        # Define the layers using nn.Linear
+        input_size = 2
+        hidden1_size = 18
+        hidden2_size = 4
+        output_size = 1
 
-
+        # Use nn.Linear to initialize weights and biases automatically
+        self.fc1 = nn.Linear(input_size, hidden1_size)   # First hidden layer
+        self.fc2 = nn.Linear(hidden1_size, hidden2_size) # Second hidden layer
+        self.fc3 = nn.Linear(hidden2_size, output_size)  # Output layer
+ """
 

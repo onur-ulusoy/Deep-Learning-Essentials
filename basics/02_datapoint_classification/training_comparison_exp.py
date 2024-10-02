@@ -28,7 +28,7 @@ model = NeuralNetwork()
 
 # Define input
 torch.manual_seed(42)
-sample_size = 2
+sample_size = 3
 X_torch = torch.randn(sample_size, 2)  # n sample, 2 features
 # True labels for the input
 y_true = np.ones((sample_size, 1))
@@ -97,21 +97,21 @@ def relu_derivative(z):
 
 def backward_pass_numpy(X, y, y_pred, W1, W2, W3, a1, a2):
     m = y.shape[0]
-
+    print("m:", m)
     # Output layer error
     dz3 = y_pred - y  # dL/dz3
     dw3 = np.matmul(a2.T, dz3) / m  # dL/dW3
-    db3 = np.sum(dz3, axis=0, keepdims=True)  # dL/db3
+    db3 = np.sum(dz3, axis=0, keepdims=True) / m  # dL/db3
 
     # Second hidden layer error
     dz2 = np.matmul(dz3, W3) * relu_derivative(a2)  # dL/dz2
     dw2 = np.matmul(a1.T, dz2) / m  # dL/dW2
-    db2 = np.sum(dz2, axis=0, keepdims=True)  # dL/db2
+    db2 = np.sum(dz2, axis=0, keepdims=True) / m # dL/db2
 
     # First hidden layer error
     dz1 = np.matmul(dz2, W2) * relu_derivative(a1)  # dL/dz1
     dw1 = np.matmul(X.T, dz1) / m  # dL/dW1
-    db1 = np.sum(dz1, axis=0, keepdims=True)  # dL/db1
+    db1 = np.sum(dz1, axis=0, keepdims=True) / m  # dL/db1
 
     return dw1, db1, dw2, db2, dw3, db3
 
@@ -148,15 +148,14 @@ loss_diff = np.abs(loss_numpy - loss_torch.item())
 print("Difference in Loss:", loss_diff)
 
 # Compare gradients for each layer
-print(dw1_numpy.shape)
-print(dw1_numpy)
-print(dw1_torch.shape)
-print(dw1_torch)
+print("dw1 shape:", dw1_numpy.shape)
+print("dw1 numpy:", dw1_numpy)
+print("dw1 torch T:",dw1_torch.T)
 
 # Layer 1 gradients comparison
 dw1_diff = np.linalg.norm(dw1_numpy.T - dw1_torch)
 db1_diff = np.linalg.norm(db1_numpy - db1_torch)
-print("db1 shape\n", db1_numpy.shape, "\n")
+print("\ndb1 shape:", db1_numpy.shape)
 print("db1 numpy:", db1_numpy)
 print("db1 torch:", db1_torch)
 
