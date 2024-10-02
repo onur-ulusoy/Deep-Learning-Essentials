@@ -27,3 +27,7 @@ I then created a comparison experiment script to run both the custom and PyTorch
 
 Due to the lack of batch normalization and learning rate optimization, the training process remains highly dependent on initialization. As a result, the outcome varies depending on the random seed used. In future problems, I plan to implement these features based on the insights and experiences gained from this work.
 
+
+## Results
+
+

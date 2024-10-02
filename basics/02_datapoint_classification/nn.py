@@ -1,7 +1,7 @@
 import numpy as np
 import pickle, os
-#import torch
-#import torch.nn as nn
+import torch
+import torch.nn as nn
 
 # Neural network for desired architecture, created using only numpy
 class NN:
@@ -12,18 +12,18 @@ class NN:
         self.W2 = np.random.rand(hidden1_size, hidden2_size)*0.01
         self.W3 = np.random.rand(hidden2_size, output_size)*0.01 """
 
-        self.b1 = np.random.rand(1, hidden1_size)
+        """ self.b1 = np.random.rand(1, hidden1_size)
         self.b2 = np.random.rand(1, hidden2_size)
         self.b3 = np.random.rand(1, output_size)
 
         # applying Xavier or He initialization:
         self.W1 = self.he_init(input_size, hidden1_size)
         self.W2 = self.he_init(hidden1_size, hidden2_size)
-        self.W3 = self.xavier_init(hidden2_size, output_size)  # For sigmoid layer
+        self.W3 = self.xavier_init(hidden2_size, output_size)  # For sigmoid layer """
 
-        """ torch initialization
+        #torch initialization
         torch.manual_seed(41)
-        nn_model = SimpleNeuralNetwork()
+        nn_model = SimpleNeuralNetwork(input_size, hidden1_size, hidden2_size, output_size)
 
         # Retrieve the weights and biases as NumPy arrays
         self.W1 = nn_model.fc1.weight.detach().numpy().T
@@ -33,7 +33,7 @@ class NN:
         self.b2 = nn_model.fc2.bias.detach().numpy().reshape(1, hidden2_size)
 
         self.W3 = nn_model.fc3.weight.detach().numpy().T
-        self.b3 = nn_model.fc3.bias.detach().numpy().reshape(1, output_size) """
+        self.b3 = nn_model.fc3.bias.detach().numpy().reshape(1, output_size)
 
 
 
@@ -163,18 +163,14 @@ class NN:
         
         print(f"Model weights and biases saved successfully at {file_path}.")
 
-""" class SimpleNeuralNetwork(nn.Module):
-    def __init__(self):
+## torch nn class just to retrieve initial weights and biases to get the same results with torch
+class SimpleNeuralNetwork(nn.Module):
+    def __init__(self, input_size, hidden1_size, hidden2_size, output_size):
         super(SimpleNeuralNetwork, self).__init__()
-        # Define the layers using nn.Linear
-        input_size = 2
-        hidden1_size = 18
-        hidden2_size = 4
-        output_size = 1
 
         # Use nn.Linear to initialize weights and biases automatically
         self.fc1 = nn.Linear(input_size, hidden1_size)   # First hidden layer
         self.fc2 = nn.Linear(hidden1_size, hidden2_size) # Second hidden layer
         self.fc3 = nn.Linear(hidden2_size, output_size)  # Output layer
- """
+
 
