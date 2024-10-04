@@ -4,9 +4,9 @@ from nn import NN
 from nn_torch import NN_torch
 
 # parameters for the polynomial data
-degree = 5
+degree = 2
 num_points = 50
-noise_level = 4
+noise_level = 0
 scale_factor = 0.001
 seed = 41
 
@@ -40,7 +40,7 @@ network.train(X,y,epochs=8) """
 
 
 # Initialize the PyTorch neural network
-network = NN_torch(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.1)
+network = NN_torch(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.001)
 
 # Train the network
-network.train_model(X, y, epochs=1000)
+network.train_model(X, y, epochs=5000)

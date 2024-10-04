@@ -8,6 +8,7 @@ class NN_torch(nn.Module):
     def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.01):
         super(NN_torch, self).__init__()
         
+        self.learning_rate = learning_rate
         # Define layers
         self.fc1 = nn.Linear(input_size, hidden1_size)
         self.relu1 = nn.ReLU()
@@ -19,7 +20,7 @@ class NN_torch(nn.Module):
         #self.optimizer = optim.SGD(self.parameters(), lr=learning_rate)
         self.criterion = nn.MSELoss()
         
-        # Initialize weights (similar to your NumPy initialization)
+        """ # Initialize weights
         nn.init.uniform_(self.fc1.weight, -0.01, 0.01)
         nn.init.uniform_(self.fc2.weight, -0.01, 0.01)
         nn.init.uniform_(self.fc3.weight, -0.01, 0.01)
@@ -27,7 +28,7 @@ class NN_torch(nn.Module):
         # Initialize biases
         nn.init.uniform_(self.fc1.bias, 0, 1)
         nn.init.uniform_(self.fc2.bias, 0, 1)
-        nn.init.uniform_(self.fc3.bias, 0, 1)
+        nn.init.uniform_(self.fc3.bias, 0, 1) """
         
         print("fc1 weight shape:", self.fc1.weight.shape)
         print("fc1 bias shape:", self.fc1.bias.shape)
@@ -37,31 +38,40 @@ class NN_torch(nn.Module):
         print("fc3 bias shape:", self.fc3.bias.shape)
     
     def forward(self, x):
-        out = self.fc1(x)
-        out = self.relu1(out)
+        z1 = self.fc1(x)
+        a1 = self.relu1(z1)
         
-        out = self.fc2(out)
-        out = self.relu2(out)
+        z2 = self.fc2(a1)
+        a2 = self.relu2(z2)
         
-        out = self.fc3(out)  # Linear activation for output
-        return out
+        z3 = self.fc3(a2)
+        a3 = z3  # Linear activation for output
+        return a3
     
     def train_model(self, X_train, y_train, epochs=1000):
         # Convert NumPy arrays to PyTorch tensors
-        X_train = torch.from_numpy(X_train).float()
-        y_train = torch.from_numpy(y_train).float()
-        
+        X_train = torch.tensor(X_train, dtype=torch.float32)
+        y_train = torch.tensor(y_train, dtype=torch.float32)
+        print("y_train:",y_train[0])
         for epoch in range(epochs):
             # Zero the gradients
             #self.optimizer.zero_grad()
             
             # Forward pass
-            outputs = self.forward(X_train)
-            loss = self.criterion(outputs, y_train)
+            y_pred = self.forward(X_train)
+            #print(y_pred[0])
+            loss = self.criterion(y_pred, y_train)
             
             # Backward pass and optimization
             loss.backward()
             #self.optimizer.step()
+
+            #update parameters
+            with torch.no_grad():
+                for param in self.parameters():
+                    param -= self.learning_rate * param.grad
+            
+            self.zero_grad()
             
             # Print loss every 100 epochs
             if epoch % 100 == 0:
