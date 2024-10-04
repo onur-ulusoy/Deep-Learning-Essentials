@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class PolynomialDataGenerator:
-    def __init__(self, degree, num_points, noise_level, seed=None):
+    def __init__(self, degree, num_points, noise_level=2, scale_factor=0.001, seed=None):
         """
         Initializes the PolynomialDataGenerator.
 
@@ -15,6 +15,7 @@ class PolynomialDataGenerator:
         self.degree = degree
         self.num_points = num_points
         self.noise_level = noise_level
+        self.scale_factor = scale_factor
         self.seed = seed
         self.coefficients = None
         self.X = None
@@ -29,7 +30,7 @@ class PolynomialDataGenerator:
         if self.seed is not None:
             np.random.seed(self.seed)
         # Generate coefficients from a uniform distribution between -10 and 10
-        self.coefficients = np.random.uniform(-10, 10, self.degree + 1)
+        self.coefficients = np.random.uniform(-self.scale_factor, self.scale_factor, self.degree + 1)
         print(f"Generated polynomial coefficients (highest degree first): {self.coefficients}")
 
     def _generate_data(self):

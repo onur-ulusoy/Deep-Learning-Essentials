@@ -91,10 +91,10 @@ class NN:
         for epoch in range(epochs):
             # Forward pass to get predictions
             y_pred = self.forward_pass(X)
-            
+            print(y[0], y_pred[0])
             # Backward pass to update weights
             self.backward_pass(X, y, y_pred)
-
+            print(self.db3)
             # Every 100 epochs, calculate and print the loss
             if epoch % 100 == 0:
                 loss = self.calculate_loss(y, y_pred)
