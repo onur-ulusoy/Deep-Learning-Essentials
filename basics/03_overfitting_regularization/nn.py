@@ -34,7 +34,7 @@ class NN:
         self.a1 = self.relu(self.z1)  # First hidden layer activation (ReLU)
 
         self.z2 = np.matmul(self.a1, self.W2) + self.b2
-        self.a2 = self.z2  # Second hidden layer activation (ReLU)
+        self.a2 = self.relu(self.z2)  # Second hidden layer activation (ReLU)
 
         self.z3 = np.matmul(self.a2, self.W3) + self.b3
         self.a3 = self.z3  # Output layer linear activation
@@ -44,30 +44,23 @@ class NN:
     # Backward Propagation
     def backward_pass(self, X, y, y_pred):
         m = y.shape[0]
-        """ print(m) """
 
-        #dz3 means dL/dz3 that is derivative of loss/cost function wrt z3. 
-        dz3 = y_pred - y  # Difference between predicted probability and true label
-        #print(y.T)
+        # Compute derivative of loss w.r.t z3
+        dz3 = y_pred - y  # Shape: (m, output_size)
+        print("dz3[0]:",dz3[0])
+        # Gradients for W3 and b3
+        self.dw3 = np.matmul(self.a2.T, dz3) / m  # Shape: (hidden2_size, output_size)
+        self.db3 = np.sum(dz3, axis=0, keepdims=True) / m  # Shape: (1, output_size)
 
-        self.dw3 = np.matmul(self.a2.T, dz3) / m
-        self.db3 = np.sum(dz3, axis=0, keepdims=True) / m
+        # Backpropagate to second hidden layer (apply derivative on z2)
+        dz2 = np.matmul(dz3, self.W3.T) * self.relu_derivative(self.z2)
+        self.dw2 = np.matmul(self.a1.T, dz2) / m  # Shape: (hidden1_size, hidden2_size)
+        self.db2 = np.sum(dz2, axis=0, keepdims=True) / m  # Shape: (1, hidden2_size)
 
-        """ print(dz3.shape)
-        print(self.dw3.shape)
-        print(self.db3.shape) """
-
-        dz2 = np.matmul(dz3, self.W3.T) * self.relu_derivative(self.a2)  # Derivative of ReLU
-        self.dw2 = np.matmul(self.a1.T, dz2) / m
-        self.db2 = np.sum(dz2, axis=0, keepdims=True) / m
-
-        """ print(dz2.shape)
-        print(self.dw2.shape)
-        print(self.db2.shape) """
-
-        dz1 = np.matmul(dz2, self.W2.T) * self.relu_derivative(self.a1)  # Derivative of ReLU
-        self.dw1 = np.matmul(X.T, dz1) / m
-        self.db1 = np.sum(dz1, axis=0, keepdims=True) / m
+        # Backpropagate to first hidden layer (apply derivative on z1)
+        dz1 = np.matmul(dz2, self.W2.T) * self.relu_derivative(self.z1)
+        self.dw1 = np.matmul(X.T, dz1) / m  # Shape: (input_size, hidden1_size)
+        self.db1 = np.sum(dz1, axis=0, keepdims=True) / m  # Shape: (1, hidden1_size)
 
         self.update_params()
 
@@ -94,7 +87,7 @@ class NN:
             print(y[0], y_pred[0])
             # Backward pass to update weights
             self.backward_pass(X, y, y_pred)
-            print(self.db3)
+            print("db3[0]",self.db3)
             # Every 100 epochs, calculate and print the loss
             if epoch % 100 == 0:
                 loss = self.calculate_loss(y, y_pred)
