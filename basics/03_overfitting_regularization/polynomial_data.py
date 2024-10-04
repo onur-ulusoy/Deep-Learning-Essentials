@@ -75,7 +75,7 @@ class PolynomialDataGenerator:
         y_curve = np.polyval(self.coefficients, X_curve)
         plt.plot(X_curve, y_curve, color='red', label='True Polynomial', linewidth=2)
         
-        plt.title(f"Generated Data for {self.degree}th Degree Polynomial")
+        plt.title(f"Generated Data for {self.degree} Degree Polynomial")
         plt.xlabel("X")
         plt.ylabel("y")
         plt.legend()

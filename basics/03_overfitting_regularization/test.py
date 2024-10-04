@@ -7,7 +7,7 @@ from polynomial_data import PolynomialDataGenerator
 from nn_torch import NN_torch
 import hyperparams as hp
 
-class ModelTesterTorch:
+class ModelTester:
     def __init__(self, input_size, hidden1_size, hidden2_size, output_size):
         self.input_size = input_size
         self.hidden1_size = hidden1_size
@@ -19,7 +19,7 @@ class ModelTesterTorch:
     def load_model(self, model_path=None):
         if model_path is None:
             script_dir = os.path.dirname(os.path.abspath(__file__))
-            model_path = os.path.join(script_dir, 'trained_model_torch.pkl')
+            model_path = os.path.join(script_dir, 'trained_model.pkl')
 
         # Load the model weights and biases from the pickle file
         if os.path.exists(model_path):
@@ -82,7 +82,7 @@ class ModelTesterTorch:
 if __name__ == "__main__":
 
     # Create an instance of the ModelTesterTorch class
-    tester = ModelTesterTorch(hp.input_size, hp.hidden1_size, hp.hidden2_size, hp.output_size)
+    tester = ModelTester(hp.input_size, hp.hidden1_size, hp.hidden2_size, hp.output_size)
 
     # Load the saved model
     tester.load_model()

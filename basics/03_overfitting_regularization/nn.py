@@ -1,6 +1,6 @@
 import numpy as np
 import pickle, os
-
+import torch
 # Neural network for desired architecture, created using only numpy
 class NN:
     def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate = 0.01):
@@ -47,7 +47,7 @@ class NN:
 
         # Compute derivative of loss w.r.t z3
         dz3 = y_pred - y  # Shape: (m, output_size)
-        print("dz3[0]:",dz3[0])
+        #print("dz3[0]:",dz3[0])
         # Gradients for W3 and b3
         self.dw3 = np.matmul(self.a2.T, dz3) / m  # Shape: (hidden2_size, output_size)
         self.db3 = np.sum(dz3, axis=0, keepdims=True) / m  # Shape: (1, output_size)
@@ -80,14 +80,14 @@ class NN:
         loss = np.mean((y - y_pred) ** 2)
         return loss
     
-    def train(self, X, y, epochs=1000):
+    def train_model(self, X, y, epochs=1000):
         for epoch in range(epochs):
             # Forward pass to get predictions
             y_pred = self.forward_pass(X)
-            print(y[0], y_pred[0])
+            #print(y[0], y_pred[0])
             # Backward pass to update weights
             self.backward_pass(X, y, y_pred)
-            print("db3[0]",self.db3)
+            #print("db3[0]",self.db3)
             # Every 100 epochs, calculate and print the loss
             if epoch % 100 == 0:
                 loss = self.calculate_loss(y, y_pred)
@@ -95,11 +95,15 @@ class NN:
                 #print(self.dw2)
 
     def save_model(self):
-        # Save only model weights and biases
+        # Convert weights and biases to PyTorch tensors if they aren't already
         model_data = {
-            'W1': self.W1, 'b1': self.b1,
-            'W2': self.W2, 'b2': self.b2,
-            'W3': self.W3, 'b3': self.b3
+            # I made weights transposed so that it could be compatible with test script (torch)
+            'fc1_weight': torch.tensor(self.W1.T, dtype=torch.float32) if not isinstance(self.W1, torch.Tensor) else self.W1,
+            'fc1_bias': torch.tensor(self.b1, dtype=torch.float32) if not isinstance(self.b1, torch.Tensor) else self.b1,
+            'fc2_weight': torch.tensor(self.W2.T, dtype=torch.float32) if not isinstance(self.W2, torch.Tensor) else self.W2,
+            'fc2_bias': torch.tensor(self.b2, dtype=torch.float32) if not isinstance(self.b2, torch.Tensor) else self.b2,
+            'fc3_weight': torch.tensor(self.W3.T, dtype=torch.float32) if not isinstance(self.W3, torch.Tensor) else self.W3,
+            'fc3_bias': torch.tensor(self.b3, dtype=torch.float32) if not isinstance(self.b3, torch.Tensor) else self.b3
         }
 
         # Get the directory where the script is located
@@ -109,7 +113,7 @@ class NN:
         # Save to a file (pickle format)
         with open(file_path, 'wb') as f:
             pickle.dump(model_data, f)
-        
+            
         print(f"Model weights and biases saved successfully at {file_path}.")
 
 
