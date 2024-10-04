@@ -2,7 +2,7 @@
 This is a binary classification problem where data points are generated parametrically using the dedicated `SpiralData` class from `spiral_datapoint.py`. The data points are classified into two categories: blue (0) and red (1). The problem is addressed using a basic neural network structure.
 
 ## Neural Network Architecture
-The neural network consists of an input layer, two hidden layers, and an output layer, with neuron sizes of 1x18x4x1. ReLU is used as the activation function in the hidden layers, while a sigmoid function is applied at the output layer. The architecture is largely influenced by the problem and its parameters. As this is a simple neural network intended for learning purposes, no fine-tuning, learning rate optimization, or regularization techniques have been applied.
+The neural network consists of an input layer, two hidden layers, and an output layer, with neuron sizes of 2x18x4x1. ReLU is used as the activation function in the hidden layers, while a sigmoid function is applied at the output layer. The architecture is largely influenced by the problem and its parameters. As this is a simple neural network intended for learning purposes, no fine-tuning, learning rate optimization, or regularization techniques have been applied.
 
 ## Scripts
 I developed several scripts for this project:

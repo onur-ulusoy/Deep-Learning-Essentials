@@ -89,7 +89,7 @@ class NN_torch(nn.Module):
         }
 
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(script_dir, 'trained_model_torch.pkl')
+        file_path = os.path.join(script_dir, 'trained_model.pkl')
 
         with open(file_path, 'wb') as f:
             pickle.dump(model_data, f)
