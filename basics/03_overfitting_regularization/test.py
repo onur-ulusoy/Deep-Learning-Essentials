@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from polynomial_data import PolynomialDataGenerator
 from nn_torch import NN_torch
+import hyperparams as hp
 
 class ModelTesterTorch:
     def __init__(self, input_size, hidden1_size, hidden2_size, output_size):
@@ -47,7 +48,7 @@ class ModelTesterTorch:
                                             noise_level=noise_level,
                                             scale_factor=scale_factor,
                                             seed=seed)
-
+        #test_data.plot_data()
         # Get test data points and labels
         X_test, y_test = test_data.get_data()
         y_test = y_test.reshape(-1, 1)
@@ -78,17 +79,12 @@ class ModelTesterTorch:
 
 # Main function to test the model
 if __name__ == "__main__":
-    # Parameters
-    input_size = 1
-    hidden1_size = 8
-    hidden2_size = 4
-    output_size = 1
 
     # Create an instance of the ModelTesterTorch class
-    tester = ModelTesterTorch(input_size, hidden1_size, hidden2_size, output_size)
+    tester = ModelTesterTorch(hp.input_size, hp.hidden1_size, hp.hidden2_size, hp.output_size)
 
     # Load the saved model
     tester.load_model()
 
     # Run the test
-    tester.run_test(degree=2, num_points=50, noise_level=0.1, scale_factor=0.001, seed=7)
+    tester.run_test(degree=2, num_points=50, noise_level=0, scale_factor=0.1, seed=hp.seed)
