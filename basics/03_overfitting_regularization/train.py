@@ -34,8 +34,8 @@ network = NN(input_size, hidden1_size, hidden2_size, output_size, learning_rate=
 
 
 # Initialize the PyTorch neural network
-#network = NN_torch(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.001)
+network = NN_torch(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.001)
 
 # Train the network
-network.train_model(X, y, epochs=20000)
+network.train_model(X, y, epochs=50000)
 network.save_model()
