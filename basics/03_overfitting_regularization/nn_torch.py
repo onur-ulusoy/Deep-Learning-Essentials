@@ -9,6 +9,8 @@ class NN_torch(nn.Module):
         super(NN_torch, self).__init__()
         
         self.learning_rate = learning_rate
+        self.l2_lambda = 0.02  # Regularization strength
+
         # Define layers
         self.fc1 = nn.Linear(input_size, hidden1_size)
         self.relu1 = nn.ReLU()
@@ -62,6 +64,10 @@ class NN_torch(nn.Module):
             #print(y_pred[0])
             loss = self.criterion(y_pred, y_train)
             
+            # Compute L2 regularization
+            l2_norm = sum(param.pow(2.0).sum() for param in self.parameters())
+            loss = loss + self.l2_lambda * l2_norm
+
             # Backward pass and optimization
             loss.backward()
             #self.optimizer.step()
