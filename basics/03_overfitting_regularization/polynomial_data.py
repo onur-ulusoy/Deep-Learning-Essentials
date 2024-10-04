@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class PolynomialDataGenerator:
-    def __init__(self, degree, num_points, noise_level=2, scale_factor=0.001, seed=None):
+    def __init__(self, degree, num_points, noise_level=2, scale_factor=0.001, polynomial_seed=None, noise_seed=None):
         """
         Initializes the PolynomialDataGenerator.
 
@@ -16,7 +16,8 @@ class PolynomialDataGenerator:
         self.num_points = num_points
         self.noise_level = noise_level
         self.scale_factor = scale_factor
-        self.seed = seed
+        self.polynomial_seed = polynomial_seed
+        self.noise_seed = noise_seed
         self.coefficients = None
         self.X = None
         self.y = None
@@ -27,8 +28,9 @@ class PolynomialDataGenerator:
         """
         Generates random coefficients for the polynomial based on the specified degree and seed.
         """
-        if self.seed is not None:
-            np.random.seed(self.seed)
+        if self.polynomial_seed is not None:
+            print("Polynomial seed is:", self.polynomial_seed)
+            np.random.seed(self.polynomial_seed)
         # Generate coefficients from a uniform distribution between -10 and 10
         self.coefficients = np.random.uniform(-self.scale_factor, self.scale_factor, self.degree + 1)
         print(f"Generated polynomial coefficients (highest degree first): {self.coefficients}")
@@ -41,6 +43,11 @@ class PolynomialDataGenerator:
         self.X = np.linspace(-10, 10, self.num_points)
         # Calculate y values based on the polynomial
         self.y = np.polyval(self.coefficients, self.X)
+
+        if self.noise_seed is not None:
+            print("Noise seed is:", self.noise_seed)
+            np.random.seed(self.noise_seed)
+
         # Add Gaussian noise
         noise = np.random.normal(0, self.noise_level, self.num_points)
         self.y += noise

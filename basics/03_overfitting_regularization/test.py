@@ -39,15 +39,15 @@ class ModelTesterTorch:
             raise FileNotFoundError(f"No saved model found at {model_path}.")
 
     # Function to run the test on generated polynomial data
-    def run_test(self, degree=2, num_points=40, noise_level=0.1, scale_factor=0.001, seed=7):
-        np.random.seed(seed)
+    def run_test(self, degree, num_points, noise_level, scale_factor, polynomial_seed, noise_seed):
 
         # Generate test data similar to training data
         test_data = PolynomialDataGenerator(degree=degree,
                                             num_points=num_points,
                                             noise_level=noise_level,
                                             scale_factor=scale_factor,
-                                            seed=seed)
+                                            polynomial_seed=polynomial_seed,
+                                            noise_seed=noise_seed)
         #test_data.plot_data()
         # Get test data points and labels
         X_test, y_test = test_data.get_data()
@@ -58,12 +58,13 @@ class ModelTesterTorch:
         with torch.no_grad():
             y_pred = self.network.forward(torch.tensor(X_test, dtype=torch.float32)).numpy()
 
-        # Plot the predictions
-        self.plot_predictions(X_test, y_test, y_pred)
-
         # Calculate and print the mean squared error
         mse = np.mean((y_test - y_pred)**2)
         print(f"Mean Squared Error on the test data: {mse:.4f}")
+
+        # Plot the predictions
+        self.plot_predictions(X_test, y_test, y_pred)
+
 
     # Function to plot predictions
     def plot_predictions(self, X_test, y_test, y_pred):
@@ -87,4 +88,9 @@ if __name__ == "__main__":
     tester.load_model()
 
     # Run the test
-    tester.run_test(degree=2, num_points=50, noise_level=0, scale_factor=0.1, seed=hp.seed)
+    tester.run_test(degree=hp.degree, 
+                    num_points=hp.num_points, 
+                    noise_level=hp.noise_level, 
+                    scale_factor=hp.scale_factor, 
+                    polynomial_seed=hp.polynomial_seed, 
+                    noise_seed=hp.noise_seed_test)

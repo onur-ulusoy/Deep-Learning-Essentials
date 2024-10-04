@@ -9,7 +9,8 @@ train_data = PolynomialDataGenerator(degree=hp.degree,
                                         num_points=hp.num_points,
                                         noise_level=hp.noise_level,
                                         scale_factor=hp.scale_factor,
-                                        seed=hp.seed)
+                                        polynomial_seed=hp.polynomial_seed,
+                                        noise_seed=hp.noise_seed_training)
 
 # Retrieve the data
 X, y = train_data.get_data()
@@ -37,5 +38,5 @@ network.train(X,y,epochs=8) """
 network = NN_torch(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.001)
 
 # Train the network
-network.train_model(X, y, epochs=5000)
+network.train_model(X, y, epochs=50000)
 network.save_model()

@@ -1,9 +1,11 @@
 # parameters for the polynomial data
 degree = 2
 num_points = 50
-noise_level = 0
+noise_level = 0.1
 scale_factor = 0.1
-seed = 41
+polynomial_seed = 41
+noise_seed_training = 41
+noise_seed_test = 4040
 
 # Parameters
 input_size = 1
