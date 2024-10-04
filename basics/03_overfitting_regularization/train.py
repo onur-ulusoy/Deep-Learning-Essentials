@@ -44,3 +44,4 @@ network = NN_torch(input_size, hidden1_size, hidden2_size, output_size, learning
 
 # Train the network
 network.train_model(X, y, epochs=5000)
+network.save_model()
