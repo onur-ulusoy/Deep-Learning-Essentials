@@ -33,3 +33,31 @@ I trained the model for 50,000 epochs, achieving a final training loss of **0.02
 However, when tested with a **different noise seed**, the model reveals its inability to generalize. The model still tries to approximate values specific to the training noise seed, and this issue persists across different noise variations. Instead of generalizing the training data, the model memorized it. As shown in the plot below, the red curves are nearly identical to those in the previous plot, indicating that the model is overfitted. The loss with the new noise seed is **0.0570**, nearly three times the training loss, highlighting how the model is highly specialized to the original seed rather than being adaptable.
 
 ![Overfitting with Different Noise Seed](img/overfit_different_seed.png)
+
+
+## Bias, Variance, Underfitting, and Overfitting
+- **Bias** refers to the assumptions made by the model about the relationship between input and output. High bias means the model is overly simplistic and may not capture the complexity of the data, leading to underfitting.
+- **Variance** measures the sensitivity of the model to variations in the training data. High variance usually occurs with complex models that closely fit the training data, but struggle to generalize to new data, leading to overfitting.
+
+There is a tradeoff between bias and variance:
+- **High bias** results in the model making too many assumptions, which can cause it to underfit on unseen data, meaning it won't capture the underlying patterns in the data.
+- **High variance** causes the model to be too sensitive to the training data, memorizing it rather than learning general patterns. This can lead to overfitting, where the model performs well on training data but poorly on test data.
+
+The figure below, taken from [Towards Data Science](https://towardsdatascience.com/understanding-the-bias-variance-tradeoff-165e6942b229), illustrates the bias-variance tradeoff clearly.
+
+![Bias-Variance Tradeoff](img/bias_variance.png)
+
+Additionally, this [YouTube video](https://www.youtube.com/watch?v=a6YH6EbM9xA&list=LL&index=5) provides a great summary of underfitting and overfitting.
+
+### Ways to Prevent Underfitting:
+- Train the model for more epochs.
+- Increase the complexity of the model (e.g., more neurons or layers).
+- Improve the network architecture to better suit the problem.
+
+### Ways to Prevent Overfitting:
+- Train with more data.
+- Apply regularization techniques, such as L1 or L2 regularization.
+- Use dropout or early stopping during training.
+- Improve the network architecture to better balance complexity and generalization.
+
+
