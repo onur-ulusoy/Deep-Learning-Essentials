@@ -3,8 +3,11 @@ import pickle, os
 import torch
 # Neural network for desired architecture, created using only numpy
 class NN:
-    def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate = 0.01):
+    def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate = 0.01, l2_lambda=0.02,  dropout_p1=0.25, dropout_p2=0.25):
         self.learning_rate = learning_rate
+        self.l2_lambda = l2_lambda
+        self.dropout_p1 = dropout_p1
+        self.dropout_p2 = dropout_p2
 
         ### basic initialization
         self.W1 = np.random.rand(input_size, hidden1_size)*0.01
@@ -49,17 +52,17 @@ class NN:
         dz3 = y_pred - y  # Shape: (m, output_size)
         #print("dz3[0]:",dz3[0])
         # Gradients for W3 and b3
-        self.dw3 = np.matmul(self.a2.T, dz3) / m  # Shape: (hidden2_size, output_size)
+        self.dw3 = np.matmul(self.a2.T, dz3) / m  + self.l2_lambda/m * self.W3 # Shape: (hidden2_size, output_size)
         self.db3 = np.sum(dz3, axis=0, keepdims=True) / m  # Shape: (1, output_size)
 
         # Backpropagate to second hidden layer (apply derivative on z2)
         dz2 = np.matmul(dz3, self.W3.T) * self.relu_derivative(self.z2)
-        self.dw2 = np.matmul(self.a1.T, dz2) / m  # Shape: (hidden1_size, hidden2_size)
+        self.dw2 = np.matmul(self.a1.T, dz2) / m + + self.l2_lambda/m * self.W2  # Shape: (hidden1_size, hidden2_size)
         self.db2 = np.sum(dz2, axis=0, keepdims=True) / m  # Shape: (1, hidden2_size)
 
         # Backpropagate to first hidden layer (apply derivative on z1)
         dz1 = np.matmul(dz2, self.W2.T) * self.relu_derivative(self.z1)
-        self.dw1 = np.matmul(X.T, dz1) / m  # Shape: (input_size, hidden1_size)
+        self.dw1 = np.matmul(X.T, dz1) / m + self.l2_lambda/m * self.W1  # Shape: (input_size, hidden1_size)
         self.db1 = np.sum(dz1, axis=0, keepdims=True) / m  # Shape: (1, hidden1_size)
 
         self.update_params()
@@ -78,6 +81,14 @@ class NN:
         Calculate the Mean Squared Error (MSE) loss between true values and predictions.
         """
         loss = np.mean((y - y_pred) ** 2)
+
+        # Compute weights sum for l2 regularization
+        weights_sum = np.sum(np.square(self.W1)) + np.sum(np.square(self.W2)) + np.sum(np.square(self.W3))
+
+        m = y.shape[0]
+        # compute l2 regularization term
+        l2_loss = self.l2_lambda / (2*m) * weights_sum 
+        loss += l2_loss
         return loss
     
     def train_model(self, X, y, epochs=1000):

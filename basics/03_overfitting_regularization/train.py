@@ -29,12 +29,12 @@ hidden2_size = 48
 output_size = 1
 
 np.random.seed(41)
-network = NN(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.001)
+network = NN(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.001, dropout_p1=0.25, dropout_p2=0.25)
 #network.save_model()
 
 
 # Initialize the PyTorch neural network
-network = NN_torch(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.001)
+#network = NN_torch(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.001, dropout_p1=0.25, dropout_p2=0.25)
 
 # Train the network
 network.train_model(X, y, epochs=50000)

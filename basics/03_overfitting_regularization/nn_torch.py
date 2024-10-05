@@ -5,7 +5,7 @@ import torch.optim as optim
 import pickle, os
 
 class NN_torch(nn.Module):
-    def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.01):
+    def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.01, dropout_p1=0.25, dropout_p2=0.25):
         super(NN_torch, self).__init__()
         
         self.learning_rate = learning_rate
@@ -14,8 +14,12 @@ class NN_torch(nn.Module):
         # Define layers
         self.fc1 = nn.Linear(input_size, hidden1_size)
         self.relu1 = nn.ReLU()
+        self.dropout1 = nn.Dropout(p=dropout_p1)
+
         self.fc2 = nn.Linear(hidden1_size, hidden2_size)
         self.relu2 = nn.ReLU()
+        self.dropout2 = nn.Dropout(p=dropout_p2)
+
         self.fc3 = nn.Linear(hidden2_size, output_size)
         
         # Define optimizer and loss function
@@ -42,9 +46,11 @@ class NN_torch(nn.Module):
     def forward(self, x):
         z1 = self.fc1(x)
         a1 = self.relu1(z1)
+        a1 = self.dropout1(a1)
         
         z2 = self.fc2(a1)
         a2 = self.relu2(z2)
+        a2 = self.dropout2(a2)
         
         z3 = self.fc3(a2)
         a3 = z3  # Linear activation for output
