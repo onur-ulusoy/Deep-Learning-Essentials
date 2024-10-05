@@ -139,4 +139,16 @@ Below are the plots demonstrating the results with L2 regularization and dropout
 ![L2 Regularization with Dropout and Different Seed](img/l2reg_dropout_different_seed.png)
 
 
+## Cons and Pros of Regularization and Dropout
+These are the observations and trade-offs I encountered during the implementation of regularization and dropout techniques.
+
+### Cons:
+- **Slower Convergence**: After implementing dropout, the decrease in loss during the training stage became slower. The network struggled to converge to a lower loss value.
+- **Slight Underfitting**: For some data points, the model slightly underfit. If I had further increased the L2 regularization coefficient or dropout probabilities, it might have underfit even more.
+- **Higher Final Loss**: The total loss at the end of training was higher than without regularization or dropout, which indicates a trade-off between preventing overfitting and maintaining low training loss.
+
+### Pros:
+- **Prevention of Overfitting**: Regularization and dropout successfully mitigated overfitting. The model generalized better to unseen data, capturing the broader pattern.
+- **Improved Test Performance**: Test loss was lower than before, and, interestingly, it was even lower than the training loss, showing the model's enhanced ability to generalize beyond the training data.
+
 
