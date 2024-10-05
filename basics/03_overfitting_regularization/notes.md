@@ -47,7 +47,7 @@ The figure below, taken from [Towards Data Science](https://towardsdatascience.c
 
 ![Bias-Variance Tradeoff](img/bias_variance.png)
 
-Additionally, this [YouTube video](https://www.youtube.com/watch?v=a6YH6EbM9xA&list=LL&index=5) provides a great summary of underfitting and overfitting.
+Additionally, this [YouTube video](https://www.youtube.com/watch?v=a6YH6EbM9xA&list=LL&index=5) provides a great summary of bias and variance.
 
 ### Ways to Prevent Underfitting:
 - Train the model for more epochs.
@@ -59,5 +59,48 @@ Additionally, this [YouTube video](https://www.youtube.com/watch?v=a6YH6EbM9xA&l
 - Apply regularization techniques, such as L1 or L2 regularization.
 - Use dropout or early stopping during training.
 - Improve the network architecture to better balance complexity and generalization.
+
+
+## Regularization
+To address overfitting and improve generalization within the same number of training epochs, I implemented L2 regularization in both the NumPy-based and PyTorch-based neural networks.
+
+**Regularization** is a technique designed to prevent the model's weights from growing too large by adding a penalty term to the loss function. This discourages the network from relying too heavily on any single input, ensuring that the model generalizes better to unseen data. When weights become too large, the loss increases, and during backpropagation, the model is penalized (in a way similar to negative reinforcement in reinforcement learning). As a result, the model tends to balance its focus across inputs rather than overfitting to specific patterns.
+
+- **L1 Regularization**: Adds a penalty proportional to the absolute value of the weights, driving them towards zero.
+- **L2 Regularization**: Adds a penalty proportional to the square of the weights, penalizing larger weights more heavily, which helps smooth out the model's predictions.
+
+### L2 Regularization in NumPy Implementation
+In the NumPy-based network, I implemented L2 regularization by calculating the sum of the squared weights and adding it to the total loss function. Here's how I computed the L2 penalty:
+
+```python
+weights_sum = np.sum(np.square(self.W1)) + np.sum(np.square(self.W2)) + np.sum(np.square(self.W3))
+# Compute L2 regularization term
+l2_loss = self.l2_lambda / (2 * m) * weights_sum
+loss += l2_loss
+```
+
+Where:
+- `self.W1`, `self.W2`, and `self.W3` are the weights of the layers.
+- `m` is the number of samples in the batch.
+- `self.l2_lambda` is the regularization strength.
+
+I also incorporated the L2 term during backpropagation, adjusting the weight gradients accordingly:
+
+```python
+self.dw3 = np.matmul(self.a2.T, dz3) / m + self.l2_lambda / m * self.W3
+```
+
+This ensures that the gradient updates account for the regularization term, keeping the weights from becoming too large.
+
+### Results with L2 Regularization
+After testing, I observed that the model learned the pattern in a more generalized way, reducing overfitting and improving performance on unseen data. The figures below illustrate the results of testing with the **same noise seed** and with a **different noise seed** after applying L2 regularization:
+
+- **Same Noise Seed:**
+
+![L2 Regularization with Same Seed](img/l2reg_same_seed.png)
+
+- **Different Noise Seed:**
+
+![L2 Regularization with Different Seed](img/l2reg_different_seed.png)
 
 
