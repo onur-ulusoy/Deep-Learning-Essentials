@@ -151,4 +151,24 @@ These are the observations and trade-offs I encountered during the implementatio
 - **Prevention of Overfitting**: Regularization and dropout successfully mitigated overfitting. The model generalized better to unseen data, capturing the broader pattern.
 - **Improved Test Performance**: Test loss was lower than before, and, interestingly, it was even lower than the training loss, showing the model's enhanced ability to generalize beyond the training data.
 
+## What I Learned
+
+- **Importance of Regularization**: Regularization, especially L2, is crucial in preventing overfitting. It penalizes large weights, encouraging the model to find more balanced solutions and generalize better.
+  
+- **Dropout's Effectiveness**: Dropout proved to be a powerful technique to prevent over-reliance on specific neurons, helping the model to avoid overfitting and improve its generalization.
+
+- **Trade-offs Between Bias and Variance**: Balancing bias and variance is critical. Higher regularization and dropout reduce variance (overfitting) but may increase bias, leading to potential underfitting.
+
+- **Parameter Tuning**: The choice of regularization coefficient and dropout probabilities has a significant impact. Too much regularization or dropout can lead to underfitting, while too little results in overfitting.
+
+- **Learning Rate Sensitivity**: Without normalization or scaling the data properly, the model struggled with gradient descent, making it harder to converge to a lower loss, highlighting the importance of proper data scaling.
+
+- **Understanding Neural Network Mechanics**: Building neural networks from scratch using NumPy deepened my understanding of forward and backward propagation, weight updates, and gradient flow, which helped me debug issues effectively.
+
+- **Architecture Design**: Layer and neuron size selection has a big impact on learning capacity. Larger layers led to faster overfitting, but adding regularization and dropout addressed this.
+
+- **Generalization vs. Memorization**: Overfitting led the model to memorize the training data, while regularization techniques forced the model to learn the underlying patterns, enabling better performance on unseen data.
+  
+
+
 
