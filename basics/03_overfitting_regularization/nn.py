@@ -32,12 +32,22 @@ class NN:
         return np.where(z > 0, 1, 0)
             
     # Forward Propagation
-    def forward_pass(self, X):
+    def forward_pass(self, X, training=False):
         self.z1 = np.matmul(X, self.W1) + self.b1
         self.a1 = self.relu(self.z1)  # First hidden layer activation (ReLU)
 
+        if training:
+            # Apply dropout to a1
+            self.dropout_mask1 = (np.random.rand(*self.a1.shape) > self.dropout_p1) / (1.0 - self.dropout_p1)
+            self.a1 *= self.dropout_mask1
+
         self.z2 = np.matmul(self.a1, self.W2) + self.b2
         self.a2 = self.relu(self.z2)  # Second hidden layer activation (ReLU)
+
+        if training:
+            # Apply dropout to a2
+            self.dropout_mask2 = (np.random.rand(*self.a2.shape) > self.dropout_p2) / (1.0 - self.dropout_p2)
+            self.a2 *= self.dropout_mask2
 
         self.z3 = np.matmul(self.a2, self.W3) + self.b3
         self.a3 = self.z3  # Output layer linear activation
@@ -57,11 +67,17 @@ class NN:
 
         # Backpropagate to second hidden layer (apply derivative on z2)
         dz2 = np.matmul(dz3, self.W3.T) * self.relu_derivative(self.z2)
+        # Apply dropout mask to dz2
+        dz2 *= self.dropout_mask2
+        
         self.dw2 = np.matmul(self.a1.T, dz2) / m + + self.l2_lambda/m * self.W2  # Shape: (hidden1_size, hidden2_size)
         self.db2 = np.sum(dz2, axis=0, keepdims=True) / m  # Shape: (1, hidden2_size)
 
         # Backpropagate to first hidden layer (apply derivative on z1)
         dz1 = np.matmul(dz2, self.W2.T) * self.relu_derivative(self.z1)
+        # Apply dropout mask to dz1
+        dz1 *= self.dropout_mask1
+
         self.dw1 = np.matmul(X.T, dz1) / m + self.l2_lambda/m * self.W1  # Shape: (input_size, hidden1_size)
         self.db1 = np.sum(dz1, axis=0, keepdims=True) / m  # Shape: (1, hidden1_size)
 
@@ -94,7 +110,7 @@ class NN:
     def train_model(self, X, y, epochs=1000):
         for epoch in range(epochs):
             # Forward pass to get predictions
-            y_pred = self.forward_pass(X)
+            y_pred = self.forward_pass(X, training=True)
             #print(y[0], y_pred[0])
             # Backward pass to update weights
             self.backward_pass(X, y, y_pred)
