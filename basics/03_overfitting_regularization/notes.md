@@ -104,3 +104,39 @@ After testing, I observed that the model learned the pattern in a more generaliz
 ![L2 Regularization with Different Seed](img/l2reg_different_seed.png)
 
 
+### Dropout
+After implementing L2 regularization, I also decided to apply the dropout technique for further improvement in generalization.
+
+Dropout works by deactivating a random subset of neurons during each forward and backward propagation step in training. Each neuron has a probability of being "dropped," meaning it won't participate in that particular pass. This technique prevents the model from becoming overly reliant on any specific neurons, promoting more robust learning and better generalization. In essence, it serves as another form of regularization by randomly setting some weights to zero, forcing the model to distribute learning across multiple features.
+
+In the NumPy-based neural network, I implemented a mask to deactivate neurons with a certain probability. This approach zeroes out the activations of randomly selected neurons, preventing them from transmitting any information to subsequent layers. Here's an example of how I implemented it:
+
+```python
+if training:
+    # Apply dropout to a1
+    self.dropout_mask1 = (np.random.rand(*self.a1.shape) > self.dropout_p1) / (1.0 - self.dropout_p1)
+    self.a1 *= self.dropout_mask1
+```
+
+This code ensures that, during training, a fraction of the neurons in layer one are deactivated based on the dropout probability `dropout_p1`. In the backward pass, the same mask is applied to ensure consistency:
+
+```python
+# Apply dropout mask to dz2
+dz2 *= self.dropout_mask2
+```
+
+### Results with L2 Regularization & Dropout
+As expected, combining L2 regularization with dropout yielded better results. The model was able to generalize more effectively, approximating the function with improved flexibility.
+
+Below are the plots demonstrating the results with L2 regularization and dropout applied:
+
+- **Same Noise Seed:**
+
+![L2 Regularization with Dropout and Same Seed](img/l2reg_dropout_same_seed.png)
+
+- **Different Noise Seed:**
+
+![L2 Regularization with Dropout and Different Seed](img/l2reg_dropout_different_seed.png)
+
+
+
