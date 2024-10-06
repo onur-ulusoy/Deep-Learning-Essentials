@@ -19,6 +19,13 @@ X, y = train_data.get_data()
 #train_data.plot_data()
 y = y.reshape(-1, 1)
 
+y_train_min = y.min()
+y_train_max = y.max()
+print(y.min())
+print(y.max())
+y_train_scaled = (y - y_train_min) / (y_train_max - y_train_min)
+y = y_train_scaled
+
 print(f"Shape of X: {X.shape}")
 print(f"Shape of y: {y.shape}")
 

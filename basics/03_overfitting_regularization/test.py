@@ -35,6 +35,10 @@ class ModelTester:
                 self.network.fc2.bias.data = model_data['fc2_bias']
                 self.network.fc3.weight.data = model_data['fc3_weight']
                 self.network.fc3.bias.data = model_data['fc3_bias']
+            
+            self.y_train_min = -5864.042101999311
+            self.y_train_max = 4029.9590912040485
+
         else:
             raise FileNotFoundError(f"No saved model found at {model_path}.")
 
@@ -53,17 +57,20 @@ class ModelTester:
         X_test, y_test = test_data.get_data()
         y_test = y_test.reshape(-1, 1)
 
+        y_test_scaled = (y_test - self.y_train_min) / (self.y_train_max - self.y_train_min)
+
         # Perform a forward pass using the loaded model
         self.network.eval()  # Set model to evaluation mode
         with torch.no_grad():
-            y_pred = self.network.forward(torch.tensor(X_test, dtype=torch.float32)).numpy()
+            y_pred_scaled = self.network.forward(torch.tensor(X_test, dtype=torch.float32)).numpy()
+            y_pred_original = y_pred_scaled * (self.y_train_max - self.y_train_min) + self.y_train_min
 
-        # Calculate and print the mean squared error
-        mse = np.mean((y_test - y_pred)**2)
+        # Calculate and print the mean squared error (Normalized error)
+        mse = np.mean((y_test_scaled - y_pred_scaled)**2)
         print(f"Mean Squared Error on the test data: {mse:.4f}")
 
         # Plot the predictions
-        self.plot_predictions(X_test, y_test, y_pred)
+        self.plot_predictions(X_test, y_test, y_pred_original)
 
 
     # Function to plot predictions

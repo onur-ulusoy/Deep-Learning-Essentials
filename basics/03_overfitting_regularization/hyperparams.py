@@ -1,5 +1,5 @@
 # parameters for the polynomial data
-degree = 2
+degree = 5
 num_points = 40
 noise_level = 0.2
 scale_factor = 0.1
