@@ -19,12 +19,12 @@ X, y = train_data.get_data()
 #train_data.plot_data()
 y = y.reshape(-1, 1)
 
-y_train_min = y.min()
-y_train_max = y.max()
+y_original_min = y.min()
+y_original_max = y.max()
 print(y.min())
 print(y.max())
-y_train_scaled = (y - y_train_min) / (y_train_max - y_train_min)
-y = y_train_scaled
+y_train_scaled = (y - y_original_min) / (y_original_max - y_original_min)
+y_train_scaled
 
 print(f"Shape of X: {X.shape}")
 print(f"Shape of y: {y.shape}")
@@ -32,12 +32,10 @@ print(f"Shape of y: {y.shape}")
 
 np.random.seed(41)
 network = NN(hp.input_size, hp.hidden1_size, hp.hidden2_size, hp.output_size, learning_rate=0.3, l2_lambda=0.01, dropout_p1=0.05, dropout_p2=0.05)
-#network.save_model()
-
 
 # Initialize the PyTorch neural network
 #network = NN_torch(hp.input_size, hp.hidden1_size, hp.hidden2_size, hp.output_size, learning_rate=0.3, l2_lambda=0.01, dropout_p1=0.05, dropout_p2=0.05)
 
 # Train the network
-network.train_model(X, y, epochs=50000)
+network.train_model(X, y_train_scaled, epochs=50000)
 network.save_model()
