@@ -84,6 +84,7 @@ Where:
 - `m` is the number of samples in the batch.
 - `self.l2_lambda` is the regularization strength.
 
+The division by 2 is a common practice in optimization because it simplifies the derivative of the squared weights during backpropagation.
 I also incorporated the L2 term during backpropagation, adjusting the weight gradients accordingly:
 
 ```python
@@ -170,5 +171,28 @@ These are the observations and trade-offs I encountered during the implementatio
 - **Generalization vs. Memorization**: Overfitting led the model to memorize the training data, while regularization techniques forced the model to learn the underlying patterns, enabling better performance on unseen data.
   
 
+## Normalization of y Values Update
+At the beginning of this problem, I initially attempted to model a 5th-degree polynomial. However, increasing the polynomial degree also increased the range of y-axis values (e.g., from -1000 to 1000). Since I was using Mean Squared Error (MSE) as the loss function, the loss values became excessively high, proportional to the square of the errors. This led to an **exploding gradient problem**, where the system couldn't stabilize the gradients, preventing it from minimizing the error effectively. 
 
+To avoid this issue, I initially worked with manually selected y values in an optimal range. Later, I implemented a scaling technique to normalize the y values in the training script. Before passing inputs to the neural network, I scaled them using the following approach:
+
+```python
+y_original_min = y.min()
+y_original_max = y.max()
+y_train_scaled = (y - y_original_min) / (y_original_max - y_original_min)
+```
+
+Additionally, I modified the model saving process in the neural network classes to store `y_original_min` and `y_original_max`. This allowed me to restore these parameters when testing the model after loading it, ensuring I could convert the scaled predictions back to their original values:
+
+```python
+y_pred_original = y_pred_scaled * (self.y_original_max - self.y_original_min) + self.y_original_min
+```
+
+Of course, `y_pred_scaled` is obtained from the forward propagation.
+
+I calculated the MSE error using the scaled values for both training and testing, like so:
+
+```python
+mse = np.mean((y_test_scaled - y_pred_scaled)**2)
+```
 
