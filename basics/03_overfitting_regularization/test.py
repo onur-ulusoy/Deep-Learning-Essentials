@@ -13,7 +13,16 @@ class ModelTester:
         self.hidden1_size = hidden1_size
         self.hidden2_size = hidden2_size
         self.output_size = output_size
-        self.network = NN_torch(self.input_size, self.hidden1_size, self.hidden2_size, self.output_size)
+        self.network = NN_torch(
+            self.input_size, 
+            self.hidden1_size, 
+            self.hidden2_size, 
+            self.output_size,
+            learning_rate=hp.learning_rate,
+            l2_lambda=hp.l2_lambda,
+            dropout_p1=hp.dropout_p1,
+            dropout_p2=hp.dropout_p2
+        )
 
     # Function to load the saved model from the script's path
     def load_model(self, model_path=None):

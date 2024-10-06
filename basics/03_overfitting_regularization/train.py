@@ -30,11 +30,25 @@ print(f"Shape of y: {y.shape}")
 
 
 np.random.seed(41)
-network = NN(hp.input_size, hp.hidden1_size, hp.hidden2_size, hp.output_size, learning_rate=0.3, l2_lambda=0.01, dropout_p1=0.05, dropout_p2=0.05)
+network = NN(hp.input_size, 
+             hp.hidden1_size, 
+             hp.hidden2_size, 
+             hp.output_size, 
+             hp.learning_rate, 
+             hp.l2_lambda, 
+             hp.dropout_p1, 
+             hp.dropout_p2)
 
-# Initialize the PyTorch neural network
-#network = NN_torch(hp.input_size, hp.hidden1_size, hp.hidden2_size, hp.output_size, learning_rate=0.3, l2_lambda=0.01, dropout_p1=0.05, dropout_p2=0.05)
+""" # Initialize the PyTorch neural network
+network = NN_torch( hp.input_size, 
+                    hp.hidden1_size, 
+                    hp.hidden2_size, 
+                    hp.output_size, 
+                    hp.learning_rate, 
+                    hp.l2_lambda, 
+                    hp.dropout_p1, 
+                    hp.dropout_p2) """
 
 # Train the network
-network.train_model(X, y_train_scaled, epochs=50000)
+network.train_model(X, y_train_scaled, epochs=hp.epochs)
 network.save_model(y_original_min, y_original_max)

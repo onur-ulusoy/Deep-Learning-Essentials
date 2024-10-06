@@ -12,3 +12,9 @@ input_size = 1
 hidden1_size = 88
 hidden2_size = 48
 output_size = 1
+
+learning_rate=0.3
+l2_lambda=0.01
+dropout_p1=0.05
+dropout_p2=0.05
+epochs = 50000
