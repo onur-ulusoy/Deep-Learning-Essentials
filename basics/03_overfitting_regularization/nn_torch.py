@@ -27,9 +27,9 @@ class NN_torch(nn.Module):
         self.criterion = nn.MSELoss()
         
         # Initialize weights
-        nn.init.uniform_(self.fc1.weight, 0, 0.01)
-        nn.init.uniform_(self.fc2.weight, 0, 0.01)
-        nn.init.uniform_(self.fc3.weight, 0, 0.01)
+        nn.init.uniform_(self.fc1.weight, -0.01, 0.01)
+        nn.init.uniform_(self.fc2.weight, -0.01, 0.01)
+        nn.init.uniform_(self.fc3.weight, -0.01, 0.01)
         
         # Initialize biases
         nn.init.uniform_(self.fc1.bias, 0, 1)
@@ -62,7 +62,7 @@ class NN_torch(nn.Module):
         y_train = torch.tensor(y_train, dtype=torch.float32)
         print("y_train:",y_train[0])
 
-        m = X_train.shape[0]
+        m = y_train.shape[0]
 
         for epoch in range(epochs):
             # Zero the gradients

@@ -70,7 +70,7 @@ class NN:
         # Apply dropout mask to dz2
         dz2 *= self.dropout_mask2
         
-        self.dw2 = np.matmul(self.a1.T, dz2) / m + + self.l2_lambda/m * self.W2  # Shape: (hidden1_size, hidden2_size)
+        self.dw2 = np.matmul(self.a1.T, dz2) / m + self.l2_lambda/m * self.W2  # Shape: (hidden1_size, hidden2_size)
         self.db2 = np.sum(dz2, axis=0, keepdims=True) / m  # Shape: (1, hidden2_size)
 
         # Backpropagate to first hidden layer (apply derivative on z1)
