@@ -26,15 +26,15 @@ class NN_torch(nn.Module):
         #self.optimizer = optim.SGD(self.parameters(), lr=learning_rate)
         self.criterion = nn.MSELoss()
         
-        """ # Initialize weights
-        nn.init.uniform_(self.fc1.weight, -0.01, 0.01)
-        nn.init.uniform_(self.fc2.weight, -0.01, 0.01)
-        nn.init.uniform_(self.fc3.weight, -0.01, 0.01)
+        # Initialize weights
+        nn.init.uniform_(self.fc1.weight, 0, 0.01)
+        nn.init.uniform_(self.fc2.weight, 0, 0.01)
+        nn.init.uniform_(self.fc3.weight, 0, 0.01)
         
         # Initialize biases
         nn.init.uniform_(self.fc1.bias, 0, 1)
         nn.init.uniform_(self.fc2.bias, 0, 1)
-        nn.init.uniform_(self.fc3.bias, 0, 1) """
+        nn.init.uniform_(self.fc3.bias, 0, 1)
         
         print("fc1 weight shape:", self.fc1.weight.shape)
         print("fc1 bias shape:", self.fc1.bias.shape)
@@ -61,6 +61,9 @@ class NN_torch(nn.Module):
         X_train = torch.tensor(X_train, dtype=torch.float32)
         y_train = torch.tensor(y_train, dtype=torch.float32)
         print("y_train:",y_train[0])
+
+        m = X_train.shape[0]
+
         for epoch in range(epochs):
             # Zero the gradients
             #self.optimizer.zero_grad()
@@ -70,10 +73,14 @@ class NN_torch(nn.Module):
             #print(y_pred[0])
             loss = self.criterion(y_pred, y_train)
             
-            # Compute L2 regularization
-            l2_norm = sum(param.pow(2.0).sum() for param in self.parameters())
-            loss = loss + self.l2_lambda * l2_norm
-
+            # Compute L2 regularization (exclude biases)
+            weights_sum = (
+                self.fc1.weight.pow(2.0).sum() +
+                self.fc2.weight.pow(2.0).sum() +
+                self.fc3.weight.pow(2.0).sum()
+            )
+            # Scale the regularization term to match NumPy implementation
+            loss = loss + (self.l2_lambda / (2 * m)) * weights_sum
             # Backward pass and optimization
             loss.backward()
             #self.optimizer.step()
