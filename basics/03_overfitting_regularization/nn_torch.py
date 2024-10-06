@@ -90,14 +90,16 @@ class NN_torch(nn.Module):
                 print(f'Epoch {epoch}, Loss: {loss.item():.4f}')
     
     # Save model's weights and biases
-    def save_model(self):
+    def save_model(self, y_original_min, y_original_max):
         model_data = {
             'fc1_weight': self.fc1.weight.data,
             'fc1_bias': self.fc1.bias.data,
             'fc2_weight': self.fc2.weight.data,
             'fc2_bias': self.fc2.bias.data,
             'fc3_weight': self.fc3.weight.data,
-            'fc3_bias': self.fc3.bias.data
+            'fc3_bias': self.fc3.bias.data,
+            'y_original_min': y_original_min,
+            'y_original_max': y_original_max
         }
 
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -106,4 +108,4 @@ class NN_torch(nn.Module):
         with open(file_path, 'wb') as f:
             pickle.dump(model_data, f)
 
-        print(f"Model weights and biases saved successfully at {file_path}.")
+        print(f"Model weights, biases, and y_original_min/max saved successfully at {file_path}.")

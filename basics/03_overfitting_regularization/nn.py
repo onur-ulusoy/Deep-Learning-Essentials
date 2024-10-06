@@ -121,7 +121,7 @@ class NN:
                 print(f'Epoch {epoch}, Loss: {loss:.4f}')
                 #print(self.dw2)
 
-    def save_model(self):
+    def save_model(self, y_original_min, y_original_max):
         # Convert weights and biases to PyTorch tensors if they aren't already
         model_data = {
             # I made weights transposed so that it could be compatible with test script (torch)
@@ -130,7 +130,9 @@ class NN:
             'fc2_weight': torch.tensor(self.W2.T, dtype=torch.float32) if not isinstance(self.W2, torch.Tensor) else self.W2,
             'fc2_bias': torch.tensor(self.b2, dtype=torch.float32) if not isinstance(self.b2, torch.Tensor) else self.b2,
             'fc3_weight': torch.tensor(self.W3.T, dtype=torch.float32) if not isinstance(self.W3, torch.Tensor) else self.W3,
-            'fc3_bias': torch.tensor(self.b3, dtype=torch.float32) if not isinstance(self.b3, torch.Tensor) else self.b3
+            'fc3_bias': torch.tensor(self.b3, dtype=torch.float32) if not isinstance(self.b3, torch.Tensor) else self.b3,
+            'y_original_min': y_original_min,
+            'y_original_max': y_original_max
         }
 
         # Get the directory where the script is located
@@ -141,6 +143,6 @@ class NN:
         with open(file_path, 'wb') as f:
             pickle.dump(model_data, f)
             
-        print(f"Model weights and biases saved successfully at {file_path}.")
+        print(f"Model weights, biases, and y_original_min/max saved successfully at {file_path}.")
 
 

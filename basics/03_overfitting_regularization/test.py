@@ -36,8 +36,8 @@ class ModelTester:
                 self.network.fc3.weight.data = model_data['fc3_weight']
                 self.network.fc3.bias.data = model_data['fc3_bias']
             
-            self.y_original_min = -5864.042101999311
-            self.y_original_max = 4029.9590912040485
+                self.y_original_min = model_data['y_original_min']
+                self.y_original_max = model_data['y_original_max']
 
         else:
             raise FileNotFoundError(f"No saved model found at {model_path}.")

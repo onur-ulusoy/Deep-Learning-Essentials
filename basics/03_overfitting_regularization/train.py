@@ -24,7 +24,6 @@ y_original_max = y.max()
 print(y.min())
 print(y.max())
 y_train_scaled = (y - y_original_min) / (y_original_max - y_original_min)
-y_train_scaled
 
 print(f"Shape of X: {X.shape}")
 print(f"Shape of y: {y.shape}")
@@ -34,8 +33,8 @@ np.random.seed(41)
 network = NN(hp.input_size, hp.hidden1_size, hp.hidden2_size, hp.output_size, learning_rate=0.3, l2_lambda=0.01, dropout_p1=0.05, dropout_p2=0.05)
 
 # Initialize the PyTorch neural network
-#network = NN_torch(hp.input_size, hp.hidden1_size, hp.hidden2_size, hp.output_size, learning_rate=0.3, l2_lambda=0.01, dropout_p1=0.05, dropout_p2=0.05)
+network = NN_torch(hp.input_size, hp.hidden1_size, hp.hidden2_size, hp.output_size, learning_rate=0.3, l2_lambda=0.01, dropout_p1=0.05, dropout_p2=0.05)
 
 # Train the network
 network.train_model(X, y_train_scaled, epochs=50000)
-network.save_model()
+network.save_model(y_original_min, y_original_max)
