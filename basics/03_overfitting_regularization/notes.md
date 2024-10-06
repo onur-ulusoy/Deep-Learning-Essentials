@@ -196,3 +196,17 @@ I calculated the MSE error using the scaled values for both training and testing
 mse = np.mean((y_test_scaled - y_pred_scaled)**2)
 ```
 
+### Adjustments Post-Normalization
+After implementing normalization, I was able to increase the learning rate from 0.1 to 0.3, as it worked better for fitting a 5th-degree polynomial. The previous learning rate of 0.1 caused underfitting and high bias when working with more complex functions like the 5th-degree polynomial, although 0.1 remains better suited for 2nd or 3rd-degree functions. The learning rate should be chosen based on the complexity of the problem.
+
+I also reduced the L2 regularization coefficient from 0.02 to 0.01 and lowered the dropout probability from 0.25 to 0.05. Normalizing the y values decreased the need for such high regularization and dropout values.
+
+Below is the plot showing the model fitting a 5th-degree polynomial perfectly, even with a different noise seed:
+
+![5th Degree Polynomial After Normalization](img/after_normalization.png)
+
+
+## Additional Aspects
+The NumPy-based neural network implementation appears to be quite robust, consistently lowering the loss value in a matter of seconds. However, the Torch-based implementation is noticeably slower and more sensitive to certain factors like the random seed, as well as the initialization of weights and biases. In some cases, this sensitivity even causes the Torch network to fail during training, resulting in NaN loss values.
+
+To improve the robustness of the Torch-based network and mitigate the impact of these issues, I plan to implement batch normalization in the next step. This technique should help stabilize the learning process and make the network less dependent on specific initialization and random seeds.
