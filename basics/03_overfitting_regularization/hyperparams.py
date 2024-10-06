@@ -1,7 +1,7 @@
 # parameters for the polynomial data
 degree = 5
 num_points = 40
-noise_level = 0.2
+noise_level = 200
 scale_factor = 0.1
 polynomial_seed = 41
 noise_seed_training = 41

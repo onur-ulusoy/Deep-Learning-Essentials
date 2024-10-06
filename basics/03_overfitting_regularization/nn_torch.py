@@ -5,11 +5,11 @@ import torch.optim as optim
 import pickle, os
 
 class NN_torch(nn.Module):
-    def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.01, dropout_p1=0.25, dropout_p2=0.25):
+    def __init__(self, input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.01, l2_lambda = 0.02, dropout_p1=0.25, dropout_p2=0.25):
         super(NN_torch, self).__init__()
         
         self.learning_rate = learning_rate
-        self.l2_lambda = 0.02  # Regularization strength
+        self.l2_lambda = l2_lambda  # Regularization strength
 
         # Define layers
         self.fc1 = nn.Linear(input_size, hidden1_size)

@@ -29,19 +29,14 @@ y = y_train_scaled
 print(f"Shape of X: {X.shape}")
 print(f"Shape of y: {y.shape}")
 
-# Neural Network Architecture
-input_size = 1
-hidden1_size = 88
-hidden2_size = 48
-output_size = 1
 
 np.random.seed(41)
-network = NN(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.001, dropout_p1=0.25, dropout_p2=0.25)
+network = NN(hp.input_size, hp.hidden1_size, hp.hidden2_size, hp.output_size, learning_rate=0.3, l2_lambda=0.01, dropout_p1=0.05, dropout_p2=0.05)
 #network.save_model()
 
 
 # Initialize the PyTorch neural network
-#network = NN_torch(input_size, hidden1_size, hidden2_size, output_size, learning_rate=0.001, dropout_p1=0.25, dropout_p2=0.25)
+#network = NN_torch(hp.input_size, hp.hidden1_size, hp.hidden2_size, hp.output_size, learning_rate=0.3, l2_lambda=0.01, dropout_p1=0.05, dropout_p2=0.05)
 
 # Train the network
 network.train_model(X, y, epochs=50000)
