@@ -47,9 +47,13 @@ class NN:
         print("W3 shape: ", self.W3.shape)
         print("b3 shape: ", self.b3.shape)
 
+    def relu(self, z):
+        return np.maximum(0, z)
+    
     # BatchNorm Forward Function
     def batch_norm_forward(self, x, gamma, beta, running_mean, running_var, training=True):
         if training:
+            # Find mean and variance of all elements in given matrix x, outputs of neurons before activation
             batch_mean = np.mean(x, axis=0, keepdims=True)
             batch_var = np.var(x, axis=0, keepdims=True)
 
@@ -75,3 +79,34 @@ class NN:
             out = gamma * x_normalized + beta
 
         return out
+    
+    # Forward Propagation
+    def forward_pass(self, X, training=False):
+        self.z1 = np.matmul(X, self.W1) + self.b1  # Linear transformation
+
+        # BatchNorm hidden layer 1
+        self.a1 = self.batch_norm_forward(self.z1, self.gamma1, self.beta1, self.running_mean1, self.running_var1, training)  
+        self.a1 = self.relu(self.a1)  # ReLU activation
+
+        # dropout hidden layer 1
+        if training:
+            # Apply dropout to a1
+            self.dropout_mask1 = (np.random.rand(*self.a1.shape) > self.dropout_p1) / (1.0 - self.dropout_p1)
+            self.a1 *= self.dropout_mask1
+
+        self.z2 = np.matmul(self.a1, self.W2) + self.b2  # Linear transformation
+
+        # BatchNorm hidden layer 1
+        self.a2 = self.batch_norm_forward(self.z2, self.gamma2, self.beta2, self.running_mean2, self.running_var2, training)
+        self.a2 = self.relu(self.a2)  # ReLU activation
+
+        # dropout hidden layer 2
+        if training:
+            # Apply dropout to a2
+            self.dropout_mask2 = (np.random.rand(*self.a2.shape) > self.dropout_p2) / (1.0 - self.dropout_p2)
+            self.a2 *= self.dropout_mask2
+
+        self.z3 = np.matmul(self.a2, self.W3) + self.b3  # Linear transformation
+        self.a3 = self.z3  # Output layer linear activation
+
+        return self.a3
