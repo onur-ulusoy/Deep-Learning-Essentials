@@ -70,7 +70,17 @@ To address overfitting and improve generalization within the same number of trai
 - **L2 Regularization**: Adds a penalty proportional to the square of the weights, penalizing larger weights more heavily, which helps smooth out the model's predictions.
 
 ### L2 Regularization in NumPy Implementation
-In the NumPy-based network, I implemented L2 regularization by calculating the sum of the squared weights and adding it to the total loss function. Here's how I computed the L2 penalty:
+In the NumPy-based network, I implemented L2 regularization by calculating the sum of the squared weights and adding it to the total loss function. 
+
+I incorporated the L2 term during backpropagation, adjusting the weight gradients accordingly. This additional term arises naturally from applying the chain rule to the L2-regularized loss function. The division by 2 is a common practice in optimization because it simplifies the derivative of the squared weights during backpropagation.
+
+```python
+self.dw3 = np.matmul(self.a2.T, dz3) / m + self.l2_lambda / m * self.W3
+```
+
+This ensures that the gradient updates account for the regularization term, keeping the weights from becoming too large.
+
+In order to print losses correctly, here's how I computed the L2 penalty:
 
 ```python
 weights_sum = np.sum(np.square(self.W1)) + np.sum(np.square(self.W2)) + np.sum(np.square(self.W3))
@@ -83,15 +93,6 @@ Where:
 - `self.W1`, `self.W2`, and `self.W3` are the weights of the layers.
 - `m` is the number of samples in the batch.
 - `self.l2_lambda` is the regularization strength.
-
-The division by 2 is a common practice in optimization because it simplifies the derivative of the squared weights during backpropagation.
-I also incorporated the L2 term during backpropagation, adjusting the weight gradients accordingly:
-
-```python
-self.dw3 = np.matmul(self.a2.T, dz3) / m + self.l2_lambda / m * self.W3
-```
-
-This ensures that the gradient updates account for the regularization term, keeping the weights from becoming too large.
 
 ### Results with L2 Regularization
 After testing, I observed that the model learned the pattern in a more generalized way, reducing overfitting and improving performance on unseen data. The figures below illustrate the results of testing with the **same noise seed** and with a **different noise seed** after applying L2 regularization:
