@@ -50,6 +50,9 @@ class NN:
     def relu(self, z):
         return np.maximum(0, z)
     
+    def relu_derivative(self, z):
+            return np.where(z > 0, 1, 0)
+    
     # BatchNorm Forward Function
     def batch_norm_forward(self, x, gamma, beta, running_mean, running_var, training=True):
         if training:
@@ -111,12 +114,30 @@ class NN:
 
         return self.a3
     
-    def batch_norm_backward():
-        pass
+    # BatchNorm Backward Function
+    """ to compute the gradients of the loss with respect to the inputs and the learnable parameters """
+    def batch_norm_backward(self, dout, gamma, x_normalized, batch_var):
+        m = dout.shape[0]
 
-    def relu_derivative():
-        pass
+        """ out = gamma*out+beta -> dout/dbeta = 1
+        dLoss/dbeta = dLoss/dout * dout/dbeta = dLoss/dout
+        we sum up entire batch of dLoss/dout """
+        dbeta = np.sum(dout, axis=0, keepdims=True)
 
+        """ The parameter gamma is multiplied by the normalized output, so the gradient is """
+        dgamma = np.sum(dout * x_normalized, axis=0, keepdims=True)
+
+        dx_normalized = dout * gamma
+        dvar = np.sum(dx_normalized * self.x_centered * -0.5 * (batch_var + self.epsilon)**(-1.5), axis=0, keepdims=True)
+        dmean = np.sum(dx_normalized * -1 / np.sqrt(batch_var + self.epsilon), axis=0, keepdims=True) + \
+                dvar * np.mean(-2 * self.x_centered, axis=0, keepdims=True)
+
+        dx = dx_normalized / np.sqrt(batch_var + self.epsilon) + \
+             dvar * 2 * self.x_centered / m + \
+             dmean / m
+
+        return dx, dgamma, dbeta
+    
     # Backward Propagation
     def backward_pass(self, X, y, y_pred, training=True):
         m = y.shape[0]
