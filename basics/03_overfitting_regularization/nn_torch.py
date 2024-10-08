@@ -64,6 +64,8 @@ class NN_torch(nn.Module):
 
         m = y_train.shape[0]
 
+        self.train()
+
         for epoch in range(epochs):
             # Zero the gradients
             #self.optimizer.zero_grad()
