@@ -72,8 +72,8 @@ class NN:
             self.batch_var = batch_var
             self.x_centered = x - batch_mean
 
-        else:
-            # Normalize x to have mean of 0 and variance of 1 using running statistics
+        else: # Test mode
+            # Normalize x to have mean of 0 and variance of 1 using running statistics because basically there is no batch mean and var in test
             x_normalized = (x - running_mean) / np.sqrt(running_var + self.epsilon)
             # Scale and shift to the optimal range
             out = gamma * x_normalized + beta
@@ -110,3 +110,55 @@ class NN:
         self.a3 = self.z3  # Output layer linear activation
 
         return self.a3
+    
+    def batch_norm_backward():
+        pass
+
+    def relu_derivative():
+        pass
+
+    # Backward Propagation
+    def backward_pass(self, X, y, y_pred, training=True):
+        m = y.shape[0]
+
+        # Compute derivative of loss w.r.t z3
+        dz3 = (y_pred - y) / m  # Shape: (m, output_size)
+        # Gradients for W3 and b3
+        self.dw3 = np.matmul(self.a2.T, dz3) + self.l2_lambda * self.W3  # Shape: (hidden2_size, output_size)
+        self.db3 = np.sum(dz3, axis=0, keepdims=True)  # Shape: (1, output_size)
+
+        # Backpropagate to second hidden layer
+        da2 = np.matmul(dz3, self.W3.T)  # Shape: (m, hidden2_size)
+
+        if training:
+            da2 *= self.dropout_mask2  # Apply dropout mask
+
+        # BatchNorm Backward for second hidden layer
+        dz2 = da2 * self.relu_derivative(self.a2)
+        dz2, dgamma2, dbeta2 = self.batch_norm_backward(dz2, self.gamma2, self.x_normalized, self.batch_var) # override dz2
+
+        # Gradients for W2 and b2, are found with normalized 
+        self.dw2 = np.matmul(self.a1.T, dz2) + self.l2_lambda * self.W2  # Shape: (hidden1_size, hidden2_size)
+        self.db2 = np.sum(dz2, axis=0, keepdims=True)  # Shape: (1, hidden2_size)
+
+        # Backpropagate to first hidden layer
+        da1 = np.matmul(dz2, self.W2.T)  # Shape: (m, hidden1_size)
+
+        if training:
+            da1 *= self.dropout_mask1  # Apply dropout mask
+
+        # BatchNorm Backward for first hidden layer
+        dz1 = da1 * self.relu_derivative(self.a1)
+        dz1, dgamma1, dbeta1 = self.batch_norm_backward(dz1, self.gamma1, self.x_normalized, self.batch_var) # override dz1
+
+        # Gradients for W1 and b1
+        self.dw1 = np.matmul(X.T, dz1) + self.l2_lambda * self.W1  # Shape: (input_size, hidden1_size)
+        self.db1 = np.sum(dz1, axis=0, keepdims=True)  # Shape: (1, hidden1_size)
+
+        # Store gradients for BatchNorm parameters
+        self.dgamma1 = dgamma1
+        self.dbeta1 = dbeta1
+        self.dgamma2 = dgamma2
+        self.dbeta2 = dbeta2
+
+        self.update_params()
