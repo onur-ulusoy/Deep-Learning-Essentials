@@ -23,7 +23,7 @@ class NN:
         """ @gamma: learnable parameter for multiplying (scaling) normalized values to adjust the output to be in optimal variance
             @beta: learnable parameter for shifting normalized values to adjust the output to be in optimal mean
             
-            running variables are used in test in order to find the normalized value
+            running variables are used in test in order to find the normalized value, that reflect common mean and var for entire training
         """
         self.gamma1 = np.ones((1, hidden1_size), dtype=np.float32)
         self.beta1 = np.zeros((1, hidden1_size), dtype=np.float32)
@@ -46,3 +46,32 @@ class NN:
         print("beta2 shape:", self.beta2.shape)
         print("W3 shape: ", self.W3.shape)
         print("b3 shape: ", self.b3.shape)
+
+    # BatchNorm Forward Function
+    def batch_norm_forward(self, x, gamma, beta, running_mean, running_var, training=True):
+        if training:
+            batch_mean = np.mean(x, axis=0, keepdims=True)
+            batch_var = np.var(x, axis=0, keepdims=True)
+
+            # Normalize x to have mean of 0 and variance of 1
+            x_normalized = (x - batch_mean) / np.sqrt(batch_var + self.epsilon)
+
+            # Scale and shift to the optimal range
+            out = gamma * x_normalized + beta
+
+            # Update Running Mean and Var along the way in every batch
+            running_mean[:] = self.momentum * running_mean + (1 - self.momentum) * batch_mean
+            running_var[:] = self.momentum * running_var + (1 - self.momentum) * batch_var
+
+            # Store for backward pass
+            self.x_normalized = x_normalized
+            self.batch_var = batch_var
+            self.x_centered = x - batch_mean
+
+        else:
+            # Normalize x to have mean of 0 and variance of 1 using running statistics
+            x_normalized = (x - running_mean) / np.sqrt(running_var + self.epsilon)
+            # Scale and shift to the optimal range
+            out = gamma * x_normalized + beta
+
+        return out
