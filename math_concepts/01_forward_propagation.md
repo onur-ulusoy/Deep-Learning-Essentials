@@ -18,7 +18,7 @@ They are parameters to be adjusted during training to give the best results out 
 
 In every layer after input layer, an element-wise activation function is applied to the neurons, giving the system its nonlinear properties. The choice of activation function depends on the specific problem, and there are many options available, such as ReLU, Sigmoid, Tanh, etc.
 
---- 
+### Layer Calculations
 
 Below is an illustration of a neural network during the training phase. 
 
@@ -80,3 +80,31 @@ $$ Z_1 = X \cdot W_1 + b_1 $$
 - The same set of weights $W_1$ and biases $b_1$ are used for both samples in the batch.
 - The forward propagation algorithm applies the weights and biases individually to each sample, meaning that each neuron in the hidden layer is calculated using only the corresponding neurons from the input layer.
 - No information is shared between samples during forward propagation. Each sample generates its own hidden layer activations based on the entire weight matrix $W_1$, but without cross-sample interaction.
+
+### Numerical Example using NumPy
+
+Let's implement the previous example using NumPy to see concrete results. This structure could represent a basic classification problem, such as classifying points in a 3D space (with 3 input feature coordinates) into two categories: red or blue. The output will be two neurons representing these two categories, with softmax activation applied to the output layer. Softmax is commonly used in binary classification problems because it outputs probabilities that represent the likelihood of belonging to each class (either blue or red).
+
+#### Architecture Overview:
+
+- **Input Layer:** 3 input features (e.g., 3D coordinates)
+- **Hidden Layer:** 1 hidden layer with 4 neurons and ReLU activation
+- **Output Layer:** 2 neurons in the output layer, with softmax activation for classification
+
+It’s important to note that this example is solely for demonstration purposes to understand the logic behind forward propagation and is not intended for actual training. With only 2 samples, proper training is not feasible. However, this setup will allow us to observe the forward pass of data through the network.
+
+#### Network Architecture Definition:
+
+```python
+# Define network architecture
+input_size = 3
+hidden_size = 4
+output_size = 2  # Number of classes, either blue or red
+```
+
+
+
+
+
+
+
