@@ -102,9 +102,74 @@ hidden_size = 4
 output_size = 2  # Number of classes, either blue or red
 ```
 
+#### Initialization:
 
+We begin by initializing our `X_train` matrix (randomly generated for this example), which fits the input layer with a shape of 2x3:
 
+```python
+# Create training data with 2 samples
+# Inputs: 2 samples, each with 3 integer features
+X_train = np.random.randint(0, 10, (2, input_size))
+```
 
+This will output `X_train` like so:
 
+```
+Inputs:
+ [[2 8 6]
+ [1 2 3]]
+```
 
+Next, we define the `y_train` matrix, representing the true labels corresponding to `X_train`. This fits the output layer with a shape of 2x2 (one-hot encoded labels for two classes):
 
+```python
+# Outputs: 2 samples, each with 2 binary labels (one-hot encoded)
+# For simplicity, let's create random one-hot encoded labels
+y_train_indices = np.random.randint(0, output_size, 2)
+y_train = np.zeros((2, output_size))
+y_train[np.arange(2), y_train_indices] = 1
+```
+
+This will output `y_train` like so:
+
+```
+Labels (One-Hot Encoded):
+ [[1. 0.]
+ [0. 1.]]
+```
+
+So, we have samples [2 8 6] with output label [1. 0.] and [1 2 3], with output label [0. 1.], totalling of 2 samples.
+
+We initialize weights and biases with small random values. Weight and bias initialization is a broader topic, so we will keep it simple for now:
+
+```python
+# Initialize weights and biases with small random values
+# Parameters between input and hidden layers
+self.W1 = np.random.randn(input_size, hidden_size) * 0.01
+self.b1 = np.zeros((1, hidden_size))
+
+# Parameters between hidden and output layers
+self.W2 = np.random.randn(hidden_size, output_size) * 0.01
+self.b2 = np.zeros((1, output_size))
+```
+
+This will output the following weights and biases:
+
+```
+W1 shape: (3, 4)
+W1: [[-0.00885127 -0.00528875 -0.00062892  0.01330022]
+     [ 0.00045693  0.00057812  0.00184987  0.00878082]
+     [-0.00098337  0.01788674 -0.00878302  0.00338431]]
+
+b1 shape: (1, 4)
+b1: [[0. 0. 0. 0.]]
+
+W2 shape: (4, 2)
+W2: [[ 0.00263928 -0.00881749]
+     [-0.0067974  -0.00869512]
+     [-0.00402919  0.01688775]
+     [-0.01814645 -0.00337234]]
+
+b2 shape: (1, 2)
+b2: [[0. 0.]]
+```
