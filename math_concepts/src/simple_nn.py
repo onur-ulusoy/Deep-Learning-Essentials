@@ -40,12 +40,15 @@ class SimpleNeuralNetwork:
     
     def forward_pass(self, X):
         """Perform forward propagation"""
-        self.z1 = np.dot(X, self.W1) + self.b1
+        self.z1 = np.matmul(X, self.W1) + self.b1
+        print("z1:", self.z1, "\n")
         self.a1 = self.relu(self.z1)  # Activation from hidden layer
-        
-        self.z2 = np.dot(self.a1, self.W2) + self.b2
+        print("a1:", self.a1, "\n")
+        self.z2 = np.matmul(self.a1, self.W2) + self.b2
+        print("z2:", self.z2, "\n")
         self.a2 = self.softmax(self.z2)  # Activation from output layer
-        
+        print("a2:", self.a2, "\n")
+
         return self.a2
     
     def calculate_loss(self, y, y_pred):
@@ -63,14 +66,14 @@ class SimpleNeuralNetwork:
         dz2 = y_pred - y  # (m x output_size)
         
         # Compute gradients for W2 and b2
-        self.dw2 = np.dot(self.a1.T, dz2) / m  # (hidden_size x output_size)
+        self.dw2 = np.matmul(self.a1.T, dz2) / m  # (hidden_size x output_size)
         self.db2 = np.sum(dz2, axis=0, keepdims=True) / m  # (1 x output_size)
         
         # Compute derivative of loss w.r. to a1
-        dz1 = np.dot(dz2, self.W2.T) * self.relu_derivative(self.a1)  # (m x hidden_size)
+        dz1 = np.matmul(dz2, self.W2.T) * self.relu_derivative(self.a1)  # (m x hidden_size)
         
         # Compute gradients for W1 and b1
-        self.dw1 = np.dot(X.T, dz1) / m  # (input_size x hidden_size)
+        self.dw1 = np.matmul(X.T, dz1) / m  # (input_size x hidden_size)
         self.db1 = np.sum(dz1, axis=0, keepdims=True) / m  # (1 x hidden_size)
         
         # Update parameters

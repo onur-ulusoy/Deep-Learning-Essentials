@@ -18,7 +18,7 @@ They are parameters to be adjusted during training to give the best results out 
 
 In every layer after input layer, an element-wise activation function is applied to the neurons, giving the system its nonlinear properties. The choice of activation function depends on the specific problem, and there are many options available, such as ReLU, Sigmoid, Tanh, etc.
 
-### Layer Calculations
+## Layer Calculations
 
 Below is an illustration of a neural network during the training phase. 
 
@@ -173,3 +173,32 @@ W2: [[ 0.00263928 -0.00881749]
 b2 shape: (1, 2)
 b2: [[0. 0.]]
 ```
+
+#### Forward Propagation:
+
+As explained earlier in matrix notation, we perform operations to find `z1` and `z2`, which are the pre-activation neuron value tensors in the hidden and output layers respectively (`z1` for hidden layer, `z2` for output layer).
+
+```python
+self.z1 = np.matmul(X, self.W1) + self.b1
+```
+
+After performing the matrix operations, we get:
+
+```
+z1: [[-0.01994736  0.10459831 -0.03915699  0.09200355]
+     [-0.01088753  0.05057299 -0.02327823  0.03287711]]
+```
+
+Next, we apply the ReLU activation function, which returns the value itself if it's greater than 0 and 0 otherwise, to obtain the activated layer tensors.
+
+```python
+self.a1 = self.relu(self.z1)  # Activation for hidden layer
+```
+
+After applying the activation, we get the `a1` matrix. As we can see, the element-wise activation function has been applied:
+
+```
+a1: [[0.          0.10459831  0.          0.09200355]
+     [0.          0.05057299  0.          0.03287711]]
+```
+
