@@ -202,3 +202,28 @@ a1: [[0.          0.10459831  0.          0.09200355]
      [0.          0.05057299  0.          0.03287711]]
 ```
 
+Similarly, we forward propagate between the hidden and output layers, this time using the softmax activation function. Softmax maps the values of the output matrix to probabilities between 0 and 1, helping us determine which class the input belongs to, and with what probability.
+
+```python
+self.z2 = np.matmul(self.a1, self.W2) + self.b2
+self.a2 = self.softmax(self.z2)  # Activation for output layer
+```
+
+The results are as follows:
+
+```
+z2: [[-0.00204375 -0.00155654]
+     [-0.00078642 -0.00070456]]
+
+a2: [[0.4998782  0.5001218 ]
+     [0.49997954 0.50002046]]
+```
+
+The `a2` matrix represents the final neuron values in the output layer. We observe that both input samples have probabilities close to 0.5 for both output classes.
+
+For example, the first row of `a2` is `[0.4998782  0.5001218]`, whereas the correct label (as per `y_train`) is `[1. 0.]`. Clearly, this is not a perfect match. However, during training, in each iteration, forward propagation and backpropagation are used to update the parameters (weights and biases). Over time, these updates bring the predicted values closer to the true labels.
+
+In a well-trained model, forward propagation can then be used to make predictions with high accuracy. This is crucial during the test phase or in real-world applications where predictions are made in a matter of seconds after the model has been deployed.
+
+The source code used in this document can be accessed [here](src/simple_nn.py). And also there are many examples related to various problems in the `basics` folder in root directory.
+
