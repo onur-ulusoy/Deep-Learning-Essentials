@@ -5,9 +5,15 @@ In this section, we will break down the math behind the backward propagation pro
 ## Logic & Calculations
 We will perform calculations and explanations using the exact same neural network structure from the [Forward Propagation Explained](01_forward_propagation.md) section. Therefore, the network architecture and parameters will not be reintroduced here.
 
-Backpropagation aims to adjust all the learnable parameters in every layer of a neural network after obtaining predictions from forward propagation. It updates the parameters to minimize the loss. To understand how a parameter affects the loss, it uses the gradient descent algorithm.
+**Backpropagation** is a fundamental algorithm used to train neural networks by adjusting all the learnable parameters (such as weights and biases) in every layer. After obtaining predictions through **forward propagation**, backpropagation calculates how each parameter contributes to the loss, allowing the network to update these parameters to minimize the loss function.
 
-Backpropagation consists of two main components in a simple neural network: calculating the gradients (using the chain rule) and updating the parameters based on these gradients.
+To understand how a parameter affects the loss, backpropagation computes the **gradients**—the derivatives of the loss with respect to each parameter—using the **chain rule** from calculus. These gradients indicate the direction and magnitude by which each parameter should be adjusted to reduce the loss.
+
+Once the gradients are computed, an **optimization algorithm** like **Gradient Descent** is employed to update the parameters. **Gradient Descent** is an optimization technique that iteratively adjusts the parameters in the opposite direction of the gradients to find a local minimum of the loss function.
+
+In summary, backpropagation consists of two main steps in a simple neural network:
+1. **Calculating Gradients:** Using the chain rule, backpropagation efficiently computes the gradients of the loss with respect to each parameter.
+2. **Updating Parameters:** An optimization algorithm (e.g., Gradient Descent) uses these gradients to adjust the parameters in a way that minimizes the loss.
 
 
 

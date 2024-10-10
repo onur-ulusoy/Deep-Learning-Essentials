@@ -59,24 +59,26 @@ class SimpleNeuralNetwork:
         return loss
     
     def backward_pass(self, X, y, y_pred):
-        """Perform backward propagation and update weights and biases"""
+        """Perform backpropagation to compute gradients and update weights and biases."""
         m = y.shape[0]  # Number of samples
-        
-        # Compute derivative of loss w.r. to z2
+
+        # --- Backpropagation: Compute Gradients ---
+
+        # Compute derivative of loss with respect to z2
         dz2 = y_pred - y  # (m x output_size)
-        
+
         # Compute gradients for W2 and b2
         self.dw2 = np.matmul(self.a1.T, dz2) / m  # (hidden_size x output_size)
         self.db2 = np.sum(dz2, axis=0, keepdims=True) / m  # (1 x output_size)
-        
-        # Compute derivative of loss w.r. to a1
+
+        # Compute derivative of loss with respect to a1
         dz1 = np.matmul(dz2, self.W2.T) * self.relu_derivative(self.a1)  # (m x hidden_size)
-        
+
         # Compute gradients for W1 and b1
         self.dw1 = np.matmul(X.T, dz1) / m  # (input_size x hidden_size)
         self.db1 = np.sum(dz1, axis=0, keepdims=True) / m  # (1 x hidden_size)
-        
-        # Update parameters
+
+        # --- Gradient Descent: Update Parameters ---
         self.update_params()
     
     def update_params(self):
