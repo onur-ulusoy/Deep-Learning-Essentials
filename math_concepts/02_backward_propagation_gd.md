@@ -16,4 +16,33 @@ In summary, backpropagation consists of two main steps in a simple neural networ
 2. **Updating Parameters:** An optimization algorithm (e.g., Gradient Descent) uses these gradients to adjust the parameters in a way that minimizes the loss.
 
 
+### Gradient Descent Details
+
+The graph below, taken from [here](https://vitalflux.com/gradient-descent-explained-simply-with-examples/), illustrates how gradient descent works to minimize the cost (loss) function.
+
+![Gradient Descent](img/gradient_descent.png)
+
+Consider a weight $w$. The formula that expresses how it updates the parameter is:
+
+$$
+w_{\text{new}} = w_{\text{old}} - \alpha \left.\frac{\partial L}{\partial w}\right|_{w=w_{\text{old}}}
+$$
+
+where:
+
+- **$w_{\text{old}}$**  
+  The current value of the weight before the update. It's the starting point for the gradient descent step.
+
+- **$w_{\text{new}}$**  
+  The updated value of the weight after applying the gradient descent step.
+
+- **$L$**  
+  The cost (loss) function that measures the discrepancy between the predicted values and the actual values.
+
+- **$\frac{\partial L}{\partial w}\bigg|_{w=w_{\text{old}}}$**  
+  The derivative of the cost function with respect to the weight $w$, evaluated at $w = w_{\text{old}}$. This derivative represents the **gradient**, slope of that function at the current weight value, indicating the direction and rate at which $L$ changes with respect to $w$.
+
+- **$\alpha$**  
+  The learning rate, a hyperparameter that determines the size of the steps taken towards the minimum of the loss function. It controls the update strength, as depicted by the incremental step in the graph. 
+
 
