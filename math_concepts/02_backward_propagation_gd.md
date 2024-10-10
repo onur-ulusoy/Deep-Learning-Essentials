@@ -43,6 +43,20 @@ where:
   The derivative of the cost function with respect to the weight $w$, evaluated at $w = w_{\text{old}}$. This derivative represents the **gradient**, slope of that function at the current weight value, indicating the direction and rate at which $L$ changes with respect to $w$.
 
 - **$\alpha$**  
-  The learning rate, a hyperparameter that determines the size of the steps taken towards the minimum of the loss function. It controls the update strength, as depicted by the incremental step in the graph. 
+  The learning rate, a hyperparameter that determines the size of the steps taken towards the minimum of the loss function. It controls the update strength, as depicted by the incremental step in the graph. A larger $\alpha$ means bigger steps towards the minimum, which can speed up convergence but risks overshooting. A smaller $\alpha$ ensures more precise updates but may slow down the training process.
+
+By iteratively applying this update rule, gradient descent navigates the parameter space to find the weight values that minimize the loss function.
+
+#### Visual Interpretation
+
+In the gradient descent graph:
+
+- The **orange curve** represents the cost function $L(w)$ as a function of the weight $w$.
+
+- The **gradient** at $w_{\text{old}}$ is the slope of the tangent to the curve at that point.
+
+- The **learning rate** $\alpha$ determines the length of the step taken along the gradient to reach $w_{\text{new}}$.
+
+
 
 
