@@ -88,3 +88,50 @@ This equation means that to compute the gradient of **$L$** with respect to **$W
 3. **$\frac{\partial z_2}{\partial W_2}$** – how the pre-activation **$z_2$** changes with respect to the weight **$W_2$**.
 
 
+#### Definitions
+
+Before diving into the derivation, let's clearly define the components involved:
+
+1. **Softmax Activation**:
+   
+   For the output layer, the softmax function converts raw values of output neurons ($Z_2$) into probabilities ($Y_{\text{pred}}$). For a single sample $k$ and output class $i$:
+   
+   $$
+   Y_{\text{pred}}^{(k,i)} = \frac{e^{Z_2^{(k,i)}}}{\sum_{j=1}^{C} e^{Z_2^{(k,j)}}}
+   $$
+   
+   Where:
+   - $C$ is the number of output classes.
+   - $Z_2^{(k,i)}$ is the pre-activation (logit) for class $i$ in sample $k$.
+   - $Y_{\text{pred}}^{(k,i)}$ is the predicted probability for class $i$ in sample $k$.
+
+2. **Cross-Entropy Loss**:
+   
+   The cross-entropy loss measures the discrepancy between the true distribution ($Y$) and the predicted distribution ($Y_{\text{pred}}$). For a single sample $k$:
+   
+   $$
+   \text{Loss}^{(k)} = -\sum_{i=1}^{C} Y^{(k,i)} \log(Y_{\text{pred}}^{(k,i)})
+   $$
+   
+   Where:
+   - $Y^{(k,i)}$ is the true label (typically one-hot encoded) for class $i$ in sample $k$.
+   - $Y_{\text{pred}}^{(k,i)}$ is as defined above.
+
+    The total loss for all samples can be written as:
+
+    $$
+    \text{Total Loss} = \sum_{k=1}^{m} \text{Loss}^{(k)}
+    $$
+
+    where $m$ is the total number of samples.
+
+    Substituting the expression for $\text{Loss}^{(k)}$:
+
+    $$
+    \text{Total Loss} = - \sum_{k=1}^{m} \sum_{i=1}^{C} Y^{(k,i)} \log(Y_{\text{pred}}^{(k,i)})
+    $$
+
+    This is the total categorical cross-entropy loss averaged over $m$ samples.
+
+
+    
