@@ -157,14 +157,25 @@ $$
 
 $j$ is a particular class here, only the terms in the loss function that involve $Y_{\text{pred}}^{(k,j)}$ contribute to the derivative, the other ones become zero. Therefore, only the relevant term survives and we no longer need summation.
 
-We have 2 output classes in our neural network. The resulting matrix consists of elements $\frac{Y^{(k,j)}}{Y_{\text{pred}}^{(k,j)}}$ for the relevant indices $k$ and $j$. Specifically, for each element of the matrix, we have:
+**Average Loss**
+
+We have to find the averaged loss function and derivative for each parameter in the same way.
+
+If $\text{Loss}_{\text{avg}} = \frac{1}{m} \sum_{k=1}^{m} \text{Loss}^{(k)}$, then:
 
 $$
-\frac{\partial L}{\partial a_2} = \begin{pmatrix}
+\frac{\partial \text{Loss}_{\text{avg}}}{\partial Y_{\text{pred}}^{(k,j)}} = \frac{1}{m} \sum_{k=1}^{m} \frac{\partial \text{Loss}^{(k)}}{\partial Y_{\text{pred}}^{(k,j)}} = -\frac{1}{m} \cdot \frac{Y^{(k,j)}}{Y_{\text{pred}}^{(k,j)}}
+$$
+
+To clearly illustrate how each element of the gradient matrix corresponds to the partial derivative $\frac{\partial \text{Loss}_{\text{avg}}}{\partial a_2^{(k,j)}}$, consider the following matrix form (we have 2x2 output matrix in the example):
+
+$$
+\frac{\partial \text{Loss}_{\text{avg}}}{\partial a_2} = \frac{1}{m} \begin{pmatrix}
+\frac{\partial \text{Loss}_{\text{avg}}}{\partial a_2^{(1,1)}} & \frac{\partial \text{Loss}_{\text{avg}}}{\partial a_2^{(1,2)}} \\
+\frac{\partial \text{Loss}_{\text{avg}}}{\partial a_2^{(2,1)}} & \frac{\partial \text{Loss}_{\text{avg}}}{\partial a_2^{(2,2)}}
+\end{pmatrix} = \frac{1}{m} \begin{pmatrix}
 -\frac{Y^{(1,1)}}{Y_{\text{pred}}^{(1,1)}} & -\frac{Y^{(1,2)}}{Y_{\text{pred}}^{(1,2)}} \\
 -\frac{Y^{(2,1)}}{Y_{\text{pred}}^{(2,1)}} & -\frac{Y^{(2,2)}}{Y_{\text{pred}}^{(2,2)}}
 \end{pmatrix}
 $$
 
-
-    
