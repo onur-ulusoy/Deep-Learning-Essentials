@@ -134,4 +134,37 @@ Before diving into the derivation, let's clearly define the components involved:
     This is the total categorical cross-entropy loss averaged over $m$ samples.
 
 
+    We use the **averaged loss** to help with error scaling and to prevent issues such as unstable or exploding gradients during training. In the actual calculations, we first compute the **total loss** by summing over all samples in the batch. Then, we divide this total by the sample size to normalize it, ensuring that the loss is on a manageable scale regardless of the batch size.
+
+    The formula for the averaged loss is:
+
+    $$
+        \text{Averaged Loss} = - \frac{1}{m} \sum_{k=1}^{m} \sum_{i=1}^{C} Y^{(k,i)} \log(Y_{\text{pred}}^{(k,i)}) 
+    $$
+
+    Here, $m$ is the batch size, $C$ is the number of classes, and $Y_{\text{pred}}$ represents the predicted probabilities for each class.
+
+
+#### Step-by-Step Derivation
+
+1. Compute the Derivative of the Loss with Respect to $Y_{\text{pred}}^{(k,j)}$ ($\frac{\partial L}{\partial a_2}$)
+
+First, we compute the partial derivative of the loss with respect to the predicted probability for each class $j$:
+
+$$
+\frac{\partial \text{Loss}^{(k)}}{\partial Y_{\text{pred}}^{(k,j)}} = -\frac{Y^{(k,j)}}{Y_{\text{pred}}^{(k,j)}}
+$$
+
+$j$ is a particular class here, only the terms in the loss function that involve $Y_{\text{pred}}^{(k,j)}$ contribute to the derivative, the other ones become zero. Therefore, only the relevant term survives and we no longer need summation.
+
+We have 2 output classes in our neural network. The resulting matrix consists of elements $\frac{Y^{(k,j)}}{Y_{\text{pred}}^{(k,j)}}$ for the relevant indices $k$ and $j$. Specifically, for each element of the matrix, we have:
+
+$$
+\frac{\partial L}{\partial a_2} = \begin{pmatrix}
+-\frac{Y^{(1,1)}}{Y_{\text{pred}}^{(1,1)}} & -\frac{Y^{(1,2)}}{Y_{\text{pred}}^{(1,2)}} \\
+-\frac{Y^{(2,1)}}{Y_{\text{pred}}^{(2,1)}} & -\frac{Y^{(2,2)}}{Y_{\text{pred}}^{(2,2)}}
+\end{pmatrix}
+$$
+
+
     
