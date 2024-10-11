@@ -66,6 +66,9 @@ class SimpleNeuralNetwork:
 
         # Compute derivative of loss with respect to z2
         dz2 = y_pred - y  # (m x output_size)
+        print("y_pred:", y_pred , "\n")
+        print("y:", y, "\n")
+        print("dz2:", dz2, "\n")
 
         # Compute gradients for W2 and b2
         self.dw2 = np.matmul(self.a1.T, dz2) / m  # (hidden_size x output_size)
@@ -139,7 +142,7 @@ if __name__ == "__main__":
     # Train the network
     nn.train(X_train, y_train, epochs)
     
-    # Make predictions on the training data
+    """ # Make predictions on the training data
     predictions = nn.predict(X_train)
     print("\nPredictions after training:")
-    print(predictions)
+    print(predictions) """

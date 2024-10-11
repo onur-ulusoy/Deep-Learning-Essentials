@@ -58,5 +58,33 @@ In the gradient descent graph:
 - The **learning rate** $\alpha$ determines the length of the step taken along the gradient to reach $w_{\text{new}}$.
 
 
+### Gradient Calculation Example
+
+To apply gradient descent, we first need to compute gradients. To find the gradient of every weight and bias in our system, we utilize the chain rule from calculus. This allows us to decompose the gradient of a parameter into the product of multiple partial derivatives of intermediate variables, which can be computed directly.
+
+For example, suppose we want to find the gradient of $W_2$ from the [previous neural network](01_forward_propagation.md), that is **$\frac{\partial L}{\partial W_2}$**. Let's walk through the steps to derive **$\frac{\partial L}{\partial W_2}$** analytically.
+
+In the neural network, $W_2$ connects the activations of the hidden layer to the output layer. Let:
+
+- **$a_1$** be the activations of the hidden layer.
+- **$z_2$** be the pre-activation output of the second layer.
+- **$y$** be the true labels, and **$y_{\text{pred}}$** be the predicted output.
+
+The **loss function** $L$ (cross-entropy in our example but also can be mean square) depends on $y_{\text{pred}}$, which in turn depends on $W_2$. The gradient **$\frac{\partial L}{\partial W_2}$** tells us how much the loss changes with respect to $W_2$. To compute this, we use the chain rule.
+
+#### Full Equation of Chain Rule:
+
+The chain rule in calculus states that when you want to compute the derivative of a function with respect to a variable that is not directly dependent, you can break it down into a series of intermediate steps. In this case, we want to compute **$\frac{\partial L}{\partial W_2}$** where **L** is the loss function and **$W_2$** is a weight matrix in the neural network.
+
+To do this, we apply the chain rule step by step, from the end to **$W_2$**:
+
+$$
+\frac{\partial L}{\partial W_2} = \frac{\partial L}{\partial a_2} \cdot \frac{\partial a_2}{\partial z_2} \cdot \frac{\partial z_2}{\partial W_2}
+$$
+
+This equation means that to compute the gradient of **$L$** with respect to **$W_2$**, we need three components:
+1. **$\frac{\partial L}{\partial a_2}$** – how the loss changes with respect to the softmax output **$a_2$**.
+2. **$\frac{\partial a_2}{\partial z_2}$** – how the softmax output changes with respect to the pre-activation **$z_2$**.
+3. **$\frac{\partial z_2}{\partial W_2}$** – how the pre-activation **$z_2$** changes with respect to the weight **$W_2$**.
 
 
