@@ -241,3 +241,31 @@ $$
 $$
 = -\sum_{j=1}^{C} Y^{(k,j)} \delta_{ij} + \sum_{j=1}^{C} Y^{(k,j)} Y_{\text{pred}}^{(k,i)}
 $$
+
+##### 4. Evaluate the Summations
+
+Let's evaluate each summation separately.
+
+a. First Summation: $-\sum_{j=1}^{C} Y^{(k,j)} \delta_{ij}$
+
+Due to the Kronecker delta $\delta_{ij}$, only the term where $j = i$ survives:
+
+$$
+-\sum_{j=1}^{C} Y^{(k,j)} \delta_{ij} = -Y^{(k,i)}
+$$
+
+b. Second Summation: 
+$\sum_{j=1}^{C} Y^{(k,j)} Y_{\text{pred}}^{(k,i)}$
+
+Notice that $Y_{\text{pred}}^{(k,i)}$ does not depend on $j$, so it can be factored out of the summation:
+
+$$
+\sum_{j=1}^{C} Y^{(k,j)} Y_{\text{pred}}^{(k,i)} = Y_{\text{pred}}^{(k,i)} \sum_{j=1}^{C} Y^{(k,j)}
+$$
+
+Since $Y^{(k,j)}$ is the true distribution and typically one-hot encoded, $\sum_{j=1}^{C} Y^{(k,j)} = 1$:
+
+$$
+= Y_{\text{pred}}^{(k,i)} \cdot 1 = Y_{\text{pred}}^{(k,i)}
+$$
+
