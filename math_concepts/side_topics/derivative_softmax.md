@@ -133,3 +133,35 @@ $$
 J_{ji} = \frac{\partial Y_{\text{pred}}^{(j)}}{\partial Z_2^{(i)}} = Y_{\text{pred}}^{(j)} \left( \delta_{ij} - Y_{\text{pred}}^{(i)} \right)
 $$
 
+### Example for 3 Classes
+
+For $C = 3$, the Jacobian matrix $J$ is:
+
+$$
+J = 
+\begin{bmatrix}
+Y_{\text{pred}}^{(1)} (1 - Y_{\text{pred}}^{(1)}) & -Y_{\text{pred}}^{(1)} Y_{\text{pred}}^{(2)} & -Y_{\text{pred}}^{(1)} Y_{\text{pred}}^{(3)} \\
+-Y_{\text{pred}}^{(2)} Y_{\text{pred}}^{(1)} & Y_{\text{pred}}^{(2)} (1 - Y_{\text{pred}}^{(2)}) & -Y_{\text{pred}}^{(2)} Y_{\text{pred}}^{(3)} \\
+-Y_{\text{pred}}^{(3)} Y_{\text{pred}}^{(1)} & -Y_{\text{pred}}^{(3)} Y_{\text{pred}}^{(2)} & Y_{\text{pred}}^{(3)} (1 - Y_{\text{pred}}^{(3)})
+\end{bmatrix}
+$$
+
+Each element describes how the output probability for class $j$ changes with respect to the input logit for class $i$.
+
+## 4. Summary
+
+- The softmax function converts logits into probabilities:
+
+  $$
+  Y_{\text{pred}}^{(j)} = \frac{e^{Z_2^{(j)}}}{\sum_{c=1}^{C} e^{Z_2^{(c)}}}
+  $$
+
+- The partial derivative of the softmax output with respect to its input is:
+
+  $$
+  \frac{\partial Y_{\text{pred}}^{(j)}}{\partial Z_2^{(i)}} = Y_{\text{pred}}^{(j)} \left( \delta_{ij} - Y_{\text{pred}}^{(i)} \right)
+  $$
+
+- This derivative captures the interaction between different classes due to the normalization effect of the softmax function.
+
+Understanding this derivative is crucial for implementing backpropagation in neural networks, especially when using the softmax activation function in the output layer.
