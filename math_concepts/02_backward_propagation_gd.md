@@ -189,7 +189,9 @@ $$
 \frac{\partial Y_{\text{pred}}^{(k,j)}}{\partial Z_2^{(k,i)}} = Y_{\text{pred}}^{(k,j)} (\delta_{ij} - Y_{\text{pred}}^{(k,i)})
 $$
 
-Where $\delta_{ij}$ is the **Kronecker delta**, defined as:
+Where $i$ being columns in matrix $Z_2$ and 
+
+$\delta_{ij}$ is the **Kronecker delta**, defined as:
 
 $$
 \delta_{ij} = 
@@ -199,4 +201,4 @@ $$
 \end{cases}
 $$
 
-You can find the softmax function derivative details [here](side_topics/derivative_softmax.md)
+You can find the softmax function derivative details [here](side_topics/derivative_softmax.md).
