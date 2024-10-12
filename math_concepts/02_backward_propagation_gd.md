@@ -202,3 +202,42 @@ $$
 $$
 
 You can find the softmax function derivative details [here](side_topics/derivative_softmax.md).
+
+
+**Explanation**:
+- If $i = j$:
+  $$
+  \frac{\partial Y_{\text{pred}}^{(k,j)}}{\partial Z_2^{(k,j)}} = Y_{\text{pred}}^{(k,j)} (1 - Y_{\text{pred}}^{(k,j)}) = Y_{\text{pred}}^{(k,j)} (1 - Y_{\text{pred}}^{(k,j)})
+  $$
+- If $i \neq j$:
+  $$
+  \frac{\partial Y_{\text{pred}}^{(k,j)}}{\partial Z_2^{(k,i)}} = -Y_{\text{pred}}^{(k,j)} Y_{\text{pred}}^{(k,i)}
+  $$
+
+##### 3. Apply the Chain Rule
+
+To find the derivative of the loss with respect to $Z_2^{(k,i)}$, we apply the chain rule:
+
+$$
+\frac{\partial \text{Loss}^{(k)}}{\partial Z_2^{(k,i)}} = \sum_{j=1}^{C} \frac{\partial \text{Loss}^{(k)}}{\partial Y_{\text{pred}}^{(k,j)}} \cdot \frac{\partial Y_{\text{pred}}^{(k,j)}}{\partial Z_2^{(k,i)}}
+$$
+
+Substituting the derivatives from Steps 1 and 2:
+
+$$
+\frac{\partial \text{Loss}^{(k)}}{\partial Z_2^{(k,i)}} = \sum_{j=1}^{C} \left( -\frac{Y^{(k,j)}}{Y_{\text{pred}}^{(k,j)}} \right) \cdot Y_{\text{pred}}^{(k,j)} (\delta_{ij} - Y_{\text{pred}}^{(k,i)})
+$$
+
+Simplify the expression:
+
+$$
+\frac{\partial \text{Loss}^{(k)}}{\partial Z_2^{(k,i)}} = \sum_{j=1}^{C} \left( -Y^{(k,j)} \right) (\delta_{ij} - Y_{\text{pred}}^{(k,i)})
+$$
+
+$$
+= -\sum_{j=1}^{C} Y^{(k,j)} (\delta_{ij} - Y_{\text{pred}}^{(k,i)})
+$$
+
+$$
+= -\sum_{j=1}^{C} Y^{(k,j)} \delta_{ij} + \sum_{j=1}^{C} Y^{(k,j)} Y_{\text{pred}}^{(k,i)}
+$$
