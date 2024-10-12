@@ -147,7 +147,7 @@ Before diving into the derivation, let's clearly define the components involved:
 
 #### Step-by-Step Derivation
 
-1. Compute the Derivative of the Loss with Respect to $Y_{\text{pred}}^{(k,j)}$ ($\frac{\partial L}{\partial a_2}$)
+##### 1. Compute the Derivative of the Loss with Respect to $Y_{\text{pred}}^{(k,j)}$ ($\frac{\partial L}{\partial a_2}$)
 
 First, we compute the partial derivative of the loss with respect to the predicted probability for each class $j$:
 
@@ -179,3 +179,24 @@ $$
 \end{pmatrix}
 $$
 
+
+
+##### 2. Compute the Derivative of $Y_{\text{pred}}^{(k,j)}$ with Respect to $Z_2^{(k,i)}$
+
+Next, we compute the partial derivative of the softmax output for class $j$ with respect to the pre-activation $Z_2^{(k,i)}$:
+
+$$
+\frac{\partial Y_{\text{pred}}^{(k,j)}}{\partial Z_2^{(k,i)}} = Y_{\text{pred}}^{(k,j)} (\delta_{ij} - Y_{\text{pred}}^{(k,i)})
+$$
+
+Where $\delta_{ij}$ is the **Kronecker delta**, defined as:
+
+$$
+\delta_{ij} = 
+\begin{cases}
+1 & \text{if } i = j \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+You can find the softmax function derivative details [here](side_topics/derivative_softmax.md)
