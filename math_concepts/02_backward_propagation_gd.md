@@ -269,3 +269,47 @@ $$
 = Y_{\text{pred}}^{(k,i)} \cdot 1 = Y_{\text{pred}}^{(k,i)}
 $$
 
+c. Combine Both Summations
+
+Putting both results together:
+
+$$
+\frac{\partial \text{Loss}^{(k)}}{\partial Z_2^{(k,i)}} = -Y^{(k,i)} + Y_{\text{pred}}^{(k,i)}
+$$
+
+$$
+= Y_{\text{pred}}^{(k,i)} - Y^{(k,i)}
+$$
+
+##### 5. Aggregate Over All Samples
+
+For a batch of $m$ samples, the derivative of the total loss with respect to $Z_2$ is the average over all samples:
+
+$$
+\frac{\partial \text{Loss}}{\partial Z_2} = \frac{1}{m} \sum_{k=1}^{m} \left( Y_{\text{pred}}^{(k)} - Y^{(k)} \right)
+$$
+
+In matrix form, when handling all samples simultaneously, this simplifies to:
+
+$$
+\frac{\partial \text{Loss}}{\partial Z_2} = Y_{\text{pred}} - Y
+$$
+
+Where:
+- $Y_{\text{pred}}$ is a matrix of shape $(m \times C)$ containing the predicted probabilities.
+- $Y$ is the true label matrix of the same shape.
+
+
+##### Intuitive Understanding
+
+The result $Y_{\text{pred}} - Y$ captures the difference between the predicted probabilities and the true labels:
+
+- **For Correctly Predicted Classes**:
+  
+  If the model assigns a high probability to the correct class ($Y_{\text{pred}}^{(k,i)}$ is large where $Y^{(k,i)} = 1$), the gradient $Y_{\text{pred}}^{(k,i)} - Y^{(k,i)}$ will be positive if the prediction is too high, encouraging the model to adjust downward.
+
+- **For Incorrectly Predicted Classes**:
+  
+  If the model assigns a non-zero probability to an incorrect class ($Y^{(k,i)} = 0$), the gradient $Y_{\text{pred}}^{(k,i)}$ encourages the model to decrease this probability.
+
+This difference directly informs how to adjust the weights to minimize the loss: increasing the probabilities for the correct classes and decreasing them for the incorrect ones.
