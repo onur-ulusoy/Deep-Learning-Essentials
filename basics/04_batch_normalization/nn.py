@@ -66,7 +66,7 @@ class NN:
             print("x_normalized:", x_normalized)
             # Scale and shift to the optimal range
             out = gamma * x_normalized + beta
-
+            print("out:", out)
             # Update Running Mean and Var along the way in every batch
             running_mean[:] = self.momentum * running_mean + (1 - self.momentum) * batch_mean
             running_var[:] = self.momentum * running_var + (1 - self.momentum) * batch_var
@@ -75,7 +75,7 @@ class NN:
             x_normalized = x_normalized
             batch_var = batch_var
             x_centered = x - batch_mean
-
+            print()
             return out, x_normalized, batch_var, x_centered
 
 
