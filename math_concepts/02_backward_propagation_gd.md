@@ -145,9 +145,9 @@ Before diving into the derivation, let's clearly define the components involved:
     Here, $m$ is the batch size, $C$ is the number of classes, and $Y_{\text{pred}}$ represents the predicted probabilities for each class.
 
 
-#### Step-by-Step Derivation
+Step-by-Step Derivation
 
-##### 1. Compute the Derivative of the Loss with Respect to $Y_{\text{pred}}^{(k,j)}$ ($\frac{\partial L}{\partial a_2}$)
+#### Step 1. Compute the Derivative of the Loss with Respect to $Y_{\text{pred}}^{(k,j)}$ ($\frac{\partial L}{\partial a_2}$)
 
 First, we compute the partial derivative of the loss with respect to the predicted probability for each class $j$:
 
@@ -181,7 +181,7 @@ $$
 
 
 
-##### 2. Compute the Derivative of $Y_{\text{pred}}^{(k,j)}$ with Respect to $Z_2^{(k,i)}$
+##### 1. Compute the Derivative of $Y_{\text{pred}}^{(k,j)}$ with Respect to $Z_2^{(k,i)}$
 
 Next, we compute the partial derivative of the softmax output for class $j$ with respect to the pre-activation $Z_2^{(k,i)}$:
 
@@ -214,7 +214,7 @@ You can find the softmax function derivative details [here](side_topics/derivati
   \frac{\partial Y_{\text{pred}}^{(k,j)}}{\partial Z_2^{(k,i)}} = -Y_{\text{pred}}^{(k,j)} Y_{\text{pred}}^{(k,i)}
   $$
 
-##### 3. Apply the Chain Rule
+##### 2. Apply the Chain Rule
 
 To find the derivative of the loss with respect to $Z_2^{(k,i)}$, we apply the chain rule:
 
@@ -242,7 +242,7 @@ $$
 = -\sum_{j=1}^{C} Y^{(k,j)} \delta_{ij} + \sum_{j=1}^{C} Y^{(k,j)} Y_{\text{pred}}^{(k,i)}
 $$
 
-##### 4. Evaluate the Summations
+##### 3. Evaluate the Summations
 
 Let's evaluate each summation separately.
 
@@ -281,7 +281,7 @@ $$
 = Y_{\text{pred}}^{(k,i)} - Y^{(k,i)}
 $$
 
-##### 5. Aggregate Over All Samples
+##### 4. Aggregate Over All Samples
 
 For a batch of $m$ samples, the derivative of the total loss with respect to $Z_2$ is the average over all samples:
 
@@ -313,3 +313,58 @@ The result $Y_{\text{pred}} - Y$ captures the difference between the predicted p
   If the model assigns a non-zero probability to an incorrect class ($Y^{(k,i)} = 0$), the gradient $Y_{\text{pred}}^{(k,i)}$ encourages the model to decrease this probability.
 
 This difference directly informs how to adjust the weights to minimize the loss: increasing the probabilities for the correct classes and decreasing them for the incorrect ones.
+
+
+
+#### Step 2: Gradient of $z_2$ with Respect to $W_2$
+
+Next, we need to compute **$\frac{\partial z_2}{\partial W_2}$**, which tells us how the pre-activation **$z_2$** depends on the weight matrix **$W_2$**.
+
+The pre-activation **$z_2$** is given by:
+
+$$
+z_2 = a_1 W_2 + b_2
+$$
+
+Where:
+- **$a_1$** is the activation from the first hidden layer.
+- **$W_2$** is the weight matrix of the second layer.
+- **$b_2$** is the bias term.
+
+When we compute the derivative of **$z_2$** with respect to **$W_2$**, we treat **$a_1$** as a constant, and the derivative is:
+
+$$
+\frac{\partial z_2}{\partial W_2} = a_1
+$$
+
+This means that **$\frac{\partial z_2}{\partial W_2}$** is simply the value of **$a_1$**, the activations from the hidden layer.
+
+#### Step 3: Combining the Derivatives
+
+Now, applying the chain rule, we can compute the full derivative **$\frac{\partial L}{\partial W_2}$**:
+
+$$
+\frac{\partial L}{\partial W_2} = \frac{\partial L}{\partial z_2} \cdot \frac{\partial z_2}{\partial W_2}
+$$
+
+Substituting in the values we computed earlier:
+
+$$
+\frac{\partial L}{\partial W_2} = (y_{\text{pred}} - y) \cdot a_1
+$$
+
+Thus, the gradient with respect to **$W_2$** is the product of the error term **$y_{\text{pred}} - y$** (which is **dz2**) and the activations **$a_1$** from the previous layer.
+
+#### Step 4: Averaging Over the Batch
+
+In practice, this gradient is computed over a batch of **m** samples. Therefore, we compute the average gradient:
+
+$$
+\frac{\partial L}{\partial W_2} = \frac{1}{m} \sum_{i=1}^{m} a_1^T \cdot (y_{\text{pred}} - y)
+$$
+
+In the code, this is implemented as:
+
+```python
+self.dw2 = np.matmul(self.a1.T, dz2) / m  # (hidden_size x output_size)
+```
