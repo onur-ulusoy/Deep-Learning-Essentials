@@ -51,31 +51,37 @@ class NN:
         return np.maximum(0, z)
     
     def relu_derivative(self, z):
-            return np.where(z > 0, 1, 0)
+        return np.where(z > 0, 1, 0)
     
     # BatchNorm Forward Function
     def batch_norm_forward(self, x, gamma, beta, running_mean, running_var, training=True):
         if training:
             # Find mean and variance of all samples as a vector
+            # mean or variance of k-th feature of all the samples is written to k-th column of 1xn vector
+            """ x: [[0.45787162 0.72803223]
+                    [0.4663173  0.6708576 ]]
+                batch_mean: [[0.46209446 0.6994449 ]] batch var: [[1.7832379e-05 8.1723440e-04]]
+                x_normalized: [[-0.80044127  0.9939384 ]
+                              [ 0.80044127 -0.99393636]] """
+            
             batch_mean = np.mean(x, axis=0, keepdims=True)
             batch_var = np.var(x, axis=0, keepdims=True)
-            print("x:", x)
-            print("batch_mean:", batch_mean, "batch var:", batch_var)
+            # print("x:", x)
+            # print("batch_mean:", batch_mean, "batch var:", batch_var)
+
             # Normalize x to have mean of 0 and variance of 1
             x_normalized = (x - batch_mean) / np.sqrt(batch_var + self.epsilon)
-            print("x_normalized:", x_normalized)
+            # print("x_normalized:", x_normalized)
+
             # Scale and shift to the optimal range
             out = gamma * x_normalized + beta
-            print("out:", out)
+            # print("out:", out)
+
             # Update Running Mean and Var along the way in every batch
             running_mean[:] = self.momentum * running_mean + (1 - self.momentum) * batch_mean
             running_var[:] = self.momentum * running_var + (1 - self.momentum) * batch_var
 
-            # Store for backward pass
-            x_normalized = x_normalized
-            batch_var = batch_var
             x_centered = x - batch_mean
-            print()
             return out, x_normalized, batch_var, x_centered
 
 
@@ -131,9 +137,11 @@ class NN:
         dLoss/dbeta = dLoss/dout * dout/dbeta = dLoss/dout
         we sum up entire batch of dLoss/dout """
         dbeta = np.sum(dout, axis=0, keepdims=True)
-
+        # print("dout:", dout)
+        # print("dbeta:", dbeta)
         """ The parameter gamma is multiplied by the normalized output, so the gradient is """
         dgamma = np.sum(dout * x_normalized, axis=0, keepdims=True)
+        # print("dgamma:", dgamma)
 
         dx_normalized = dout * gamma
         dvar = np.sum(dx_normalized * x_centered * -0.5 * (batch_var + self.epsilon)**(-1.5), axis=0, keepdims=True)
@@ -196,7 +204,21 @@ class NN:
         self.update_params()
 
     def update_params(self):
-        pass
+        # Update weights and biases
+        self.W3 -= self.learning_rate * self.dw3
+        self.W2 -= self.learning_rate * self.dw2
+        self.W1 -= self.learning_rate * self.dw1
+
+        self.b3 -= self.learning_rate * self.db3
+        self.b2 -= self.learning_rate * self.db2
+        self.b1 -= self.learning_rate * self.db1
+
+        # Update BatchNorm parameters
+        self.gamma2 -= self.learning_rate * self.dgamma2
+        self.beta2 -= self.learning_rate * self.dbeta2
+
+        self.gamma1 -= self.learning_rate * self.dgamma1
+        self.beta1 -= self.learning_rate * self.dbeta1
 
 # Code block to observe and test batch normalization algorithms
 if __name__ == "__main__":

@@ -56,3 +56,49 @@ $$
 ### 4. Output
 
 The normalized, scaled, and shifted output $\mathbf{y}^{(i)}$ is then passed to the next layer in the network.
+
+## Running Estimates for Inference (Testing)
+
+During training, we maintain running estimates of the mean and variance for use during inference (testing):
+
+- **Running Mean**:
+  $$
+  \mu_{\text{running}, k} = \alpha \mu_{\text{running}, k} + (1 - \alpha) \mu_k
+  $$
+  
+- **Running Variance**:
+  $$
+  \sigma_{\text{running}, k}^2 = \alpha \sigma_{\text{running}, k}^2 + (1 - \alpha) \sigma_k^2
+  $$
+
+- $\alpha$ is the momentum term (typically close to 1, e.g., 0.9 or 0.99).
+
+During inference, the normalization uses these running estimates:
+
+$$
+\hat{x}_k^{(i)} = \frac{x_k^{(i)} - \mu_{\text{running}, k}}{\sqrt{\sigma_{\text{running}, k}^2 + \epsilon}}
+$$
+
+## Backward Pass
+
+During backpropagation, we need to compute the gradients of the loss $L$ with respect to the inputs $x_k^{(i)}$, as well as $\gamma_k$ and $\beta_k$.
+
+Let:
+
+- $\delta_k^{(i)} = \frac{\partial L}{\partial y_k^{(i)}}$ (gradient from upstream).
+
+$\delta_k^{(i)}$ represents the gradient of the loss $L$ with respect to the output $y_k^{(i)}$ from the Batch Normalization layer. It is also called the upstream gradient, indicating the error signal coming from the next layer during backpropagation.
+
+$y_k^{(i)}$: This represents the output of the Batch Normalization layer for feature $k$ and sample $i$ after applying normalization, scaling by $\gamma_k$, and shifting by $\beta_k$. Essentially, $y_k^{(i)}$ is the final output after Batch Normalization is applied to the input $x_k^{(i)}$.
+
+### 1. Gradients with Respect to Scale and Shift Parameters
+
+- **For $\gamma_k$**:
+  $$
+  \frac{\partial L}{\partial \gamma_k} = \sum_{i=1}^{m} \delta_k^{(i)} \hat{x}_k^{(i)}
+  $$
+
+- **For $\beta_k$**:
+  $$
+  \frac{\partial L}{\partial \beta_k} = \sum_{i=1}^{m} \delta_k^{(i)}
+  $$
