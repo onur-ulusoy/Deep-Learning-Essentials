@@ -56,13 +56,14 @@ class NN:
     # BatchNorm Forward Function
     def batch_norm_forward(self, x, gamma, beta, running_mean, running_var, training=True):
         if training:
-            # Find mean and variance of all elements in given matrix x, outputs of neurons before activation
+            # Find mean and variance of all samples as a vector
             batch_mean = np.mean(x, axis=0, keepdims=True)
             batch_var = np.var(x, axis=0, keepdims=True)
-
-            # Normalize x to have mean 0 and variance 1
+            print("x:", x)
+            print("batch_mean:", batch_mean, "batch var:", batch_var)
+            # Normalize x to have mean of 0 and variance of 1
             x_normalized = (x - batch_mean) / np.sqrt(batch_var + self.epsilon)
-
+            print("x_normalized:", x_normalized)
             # Scale and shift to the optimal range
             out = gamma * x_normalized + beta
 
@@ -79,7 +80,7 @@ class NN:
 
 
         else: # Test mode
-            # Normalize x to have mean 0 and variance 1 using running statistics because basically there is no batch mean and var in test
+            # Normalize x to have mean of 0 and variance of 1 using running statistics because basically there is no batch mean and var in test
             x_normalized = (x - running_mean) / np.sqrt(running_var + self.epsilon)
             # Scale and shift to the optimal range
             out = gamma * x_normalized + beta
@@ -193,3 +194,37 @@ class NN:
         self.dbeta2 = dbeta2
 
         self.update_params()
+
+    def update_params(self):
+        pass
+
+# Code block to observe and test batch normalization algorithms
+if __name__ == "__main__":
+    # Create input data (2 samples, 2 features)
+    X = np.array([
+        [2, -3],
+        [1, 4]
+    ], dtype=np.float32)
+
+    # Create target labels (2 samples, 2 classes) as one-hot vectors
+    y = np.array([
+        [1, 0],  # Class 0
+        [0, 1]   # Class 1
+    ], dtype=np.float32)
+
+    # Initialize the neural network
+    input_size = 2
+    hidden1_size = 2
+    hidden2_size = 2
+    output_size = 2
+    learning_rate = 0.01
+
+    nn = NN(input_size, hidden1_size, hidden2_size, output_size, learning_rate)
+
+    # Forward pass
+    y_pred = nn.forward_pass(X, training=True)
+    print("\nOutput of forward pass:\n", y_pred)
+
+    # Backward pass
+    nn.backward_pass(X, y, y_pred, training=True)
+    print("\nBackward pass completed.")
