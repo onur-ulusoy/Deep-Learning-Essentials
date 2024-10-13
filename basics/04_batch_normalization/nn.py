@@ -60,7 +60,7 @@ class NN:
             batch_mean = np.mean(x, axis=0, keepdims=True)
             batch_var = np.var(x, axis=0, keepdims=True)
 
-            # Normalize x to have mean of 0 and variance of 1
+            # Normalize x to have mean 0 and variance 1
             x_normalized = (x - batch_mean) / np.sqrt(batch_var + self.epsilon)
 
             # Scale and shift to the optimal range
@@ -71,26 +71,31 @@ class NN:
             running_var[:] = self.momentum * running_var + (1 - self.momentum) * batch_var
 
             # Store for backward pass
-            self.x_normalized = x_normalized
-            self.batch_var = batch_var
-            self.x_centered = x - batch_mean
+            x_normalized = x_normalized
+            batch_var = batch_var
+            x_centered = x - batch_mean
+
+            return out, x_normalized, batch_var, x_centered
+
 
         else: # Test mode
-            # Normalize x to have mean of 0 and variance of 1 using running statistics because basically there is no batch mean and var in test
+            # Normalize x to have mean 0 and variance 1 using running statistics because basically there is no batch mean and var in test
             x_normalized = (x - running_mean) / np.sqrt(running_var + self.epsilon)
             # Scale and shift to the optimal range
             out = gamma * x_normalized + beta
 
-        return out
+            return out
     
     # Forward Propagation
     def forward_pass(self, X, training=False):
         self.z1 = np.matmul(X, self.W1) + self.b1  # Linear transformation
 
         # BatchNorm hidden layer 1
-        self.a1 = self.batch_norm_forward(self.z1, self.gamma1, self.beta1, self.running_mean1, self.running_var1, training)  
-        self.a1 = self.relu(self.a1)  # ReLU activation
-
+        self.z1, self.x_normalized1, self.batch_var1, self.x_centered1 = self.batch_norm_forward(
+            self.z1, self.gamma1, self.beta1, self.running_mean1, self.running_var1, training)
+        
+        self.a1 = self.relu(self.z1)  # ReLU activation
+        
         # dropout hidden layer 1
         if training:
             # Apply dropout to a1
@@ -100,8 +105,10 @@ class NN:
         self.z2 = np.matmul(self.a1, self.W2) + self.b2  # Linear transformation
 
         # BatchNorm hidden layer 1
-        self.a2 = self.batch_norm_forward(self.z2, self.gamma2, self.beta2, self.running_mean2, self.running_var2, training)
-        self.a2 = self.relu(self.a2)  # ReLU activation
+        self.z2, self.x_normalized2, self.batch_var2, self.x_centered2 = self.batch_norm_forward(
+            self.z2, self.gamma2, self.beta2, self.running_mean2, self.running_var2, training)
+        
+        self.a2 = self.relu(self.z2)  # ReLU activation
 
         # dropout hidden layer 2
         if training:
@@ -115,8 +122,8 @@ class NN:
         return self.a3
     
     # BatchNorm Backward Function
-    """ to compute the gradients of the loss with respect to the inputs and the learnable parameters """
-    def batch_norm_backward(self, dout, gamma, x_normalized, batch_var):
+    """ to compute the gradients, derivatives of the loss with respect to the inputs and the learnable parameters """
+    def batch_norm_backward(self, dout, gamma, x_normalized, batch_var, x_centered):
         m = dout.shape[0]
 
         """ out = gamma*out+beta -> dout/dbeta = 1
@@ -128,12 +135,12 @@ class NN:
         dgamma = np.sum(dout * x_normalized, axis=0, keepdims=True)
 
         dx_normalized = dout * gamma
-        dvar = np.sum(dx_normalized * self.x_centered * -0.5 * (batch_var + self.epsilon)**(-1.5), axis=0, keepdims=True)
+        dvar = np.sum(dx_normalized * x_centered * -0.5 * (batch_var + self.epsilon)**(-1.5), axis=0, keepdims=True)
         dmean = np.sum(dx_normalized * -1 / np.sqrt(batch_var + self.epsilon), axis=0, keepdims=True) + \
-                dvar * np.mean(-2 * self.x_centered, axis=0, keepdims=True)
+                dvar * np.mean(-2 * x_centered, axis=0, keepdims=True)
 
         dx = dx_normalized / np.sqrt(batch_var + self.epsilon) + \
-             dvar * 2 * self.x_centered / m + \
+             dvar * 2 * x_centered / m + \
              dmean / m
 
         return dx, dgamma, dbeta
@@ -143,6 +150,7 @@ class NN:
         m = y.shape[0]
 
         # Compute derivative of loss w.r.t z3
+        # Equation is straightforward because linear activation is used at output with MSE Loss.
         dz3 = (y_pred - y) / m  # Shape: (m, output_size)
         # Gradients for W3 and b3
         self.dw3 = np.matmul(self.a2.T, dz3) + self.l2_lambda * self.W3  # Shape: (hidden2_size, output_size)
@@ -156,7 +164,8 @@ class NN:
 
         # BatchNorm Backward for second hidden layer
         dz2 = da2 * self.relu_derivative(self.a2)
-        dz2, dgamma2, dbeta2 = self.batch_norm_backward(dz2, self.gamma2, self.x_normalized, self.batch_var) # override dz2
+        dz2, dgamma2, dbeta2 = self.batch_norm_backward(
+            da2 * self.relu_derivative(self.a2), self.gamma2, self.x_normalized2, self.batch_var2, self.x_centered2) # override dz2
 
         # Gradients for W2 and b2, are found with normalized 
         self.dw2 = np.matmul(self.a1.T, dz2) + self.l2_lambda * self.W2  # Shape: (hidden1_size, hidden2_size)
@@ -170,7 +179,8 @@ class NN:
 
         # BatchNorm Backward for first hidden layer
         dz1 = da1 * self.relu_derivative(self.a1)
-        dz1, dgamma1, dbeta1 = self.batch_norm_backward(dz1, self.gamma1, self.x_normalized, self.batch_var) # override dz1
+        dz1, dgamma1, dbeta1 = self.batch_norm_backward(
+            da1 * self.relu_derivative(self.a1), self.gamma1, self.x_normalized1, self.batch_var1, self.x_centered1) # override dz1
 
         # Gradients for W1 and b1
         self.dw1 = np.matmul(X.T, dz1) + self.l2_lambda * self.W1  # Shape: (input_size, hidden1_size)

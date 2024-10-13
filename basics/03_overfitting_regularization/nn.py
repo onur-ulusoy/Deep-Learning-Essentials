@@ -59,6 +59,7 @@ class NN:
         m = y.shape[0]
 
         # Compute derivative of loss w.r.t z3
+        # Equation is straightforward because linear activation is used at output with MSE Loss.
         dz3 = y_pred - y  # Shape: (m, output_size)
         #print("dz3[0]:",dz3[0])
         # Gradients for W3 and b3

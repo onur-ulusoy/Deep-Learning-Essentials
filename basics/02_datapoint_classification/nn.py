@@ -92,8 +92,9 @@ class NN:
         """ print(m) """
 
         #dz3 means dL/dz3 that is derivative of loss/cost function wrt z3. 
+        """ expression simplifies after applying chain rule, refer 02_backward_propagation_gd.md in math concepts. 
+        We have done softmax there but appearantly it is valid also for sigmoid """
         dz3 = y_pred - y  # Difference between predicted probability and true label
-        #print(y.T)
 
         self.dw3 = np.matmul(self.a2.T, dz3) / m
         self.db3 = np.sum(dz3, axis=0, keepdims=True) / m
