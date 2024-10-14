@@ -43,6 +43,7 @@ $$
 
 - $\epsilon$ is a small constant added for numerical stability.
 
+After this stage, elements of the tensor is between values [-1, 1]
 ### 3. Scale and Shift
 
 Apply learnable scale ($\gamma_k$) and shift ($\beta_k$) parameters:
@@ -51,7 +52,7 @@ $$
 y_k^{(i)} = \gamma_k \hat{x}_k^{(i)} + \beta_k
 $$
 
-- $\gamma_k$ and $\beta_k$ are parameters learned during training that allow the model to recover the original distribution if necessary.
+- $\gamma_k$ and $\beta_k$ are parameters learned during training (in backpropagation) that allow the model to recover the original distribution if necessary.
 
 ### 4. Output
 
@@ -78,6 +79,21 @@ During inference, the normalization uses these running estimates:
 $$
 \hat{x}_k^{(i)} = \frac{x_k^{(i)} - \mu_{\text{running}, k}}{\sqrt{\sigma_{\text{running}, k}^2 + \epsilon}}
 $$
+
+
+### Why is Batch Normalization Also Used in Testing?
+
+In **training**, batch normalization (BN) normalizes the input using the **batch mean** and **batch variance**, which helps in stabilizing and speeding up training by keeping the activations within a certain range.
+
+However, during **testing**, we don't have the luxury of computing statistics from batches since inference is typically done on one or a few samples. Instead, we use the **running mean** and **running variance** that were estimated during training.
+
+The key reasons for using batch normalization during testing are:
+
+1. **Consistency:** By using the running statistics (mean and variance), the model maintains consistency between training and testing. If we used batch statistics during testing, the model could behave unpredictably since the statistics on small or individual test samples might not match the distribution learned during training.
+
+2. **Stability:** The running mean and variance are smoother, more reliable estimates of the true data distribution. They ensure that even if input data during testing is not exactly like the training set, the model's behavior remains stable and well-generalized.
+
+In summary, batch normalization during testing ensures that the model leverages the learned distribution (via running mean and variance) for consistent and robust inference.
 
 ## Backward Pass
 
