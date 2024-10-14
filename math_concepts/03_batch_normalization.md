@@ -103,7 +103,7 @@ Let:
 
 - $\delta_k^{(i)} = \frac{\partial L}{\partial y_k^{(i)}}$ (gradient from upstream).
 
-$\delta_k^{(i)}$ represents the gradient of the loss $L$ with respect to the output $y_k^{(i)}$ from the Batch Normalization layer. It is also called the upstream gradient, indicating the error signal coming from the next layer during backpropagation.
+$\delta_k^{(i)}$ represents the gradient of the loss $L$ with respect to the output $y_k^{(i)}$ from the Batch Normalization layer. It is also called the upstream gradient, indicating the error signal coming from the next layer during backpropagation. It is `dout` in `batch_norm_backward` method in [example neural network](/basics/04_batch_normalization/nn.py).
 
 $y_k^{(i)}$: This represents the output of the Batch Normalization layer for feature $k$ and sample $i$ after applying normalization, scaling by $\gamma_k$, and shifting by $\beta_k$. Essentially, $y_k^{(i)}$ is the final output after Batch Normalization is applied to the input $x_k^{(i)}$.
 
@@ -118,3 +118,10 @@ $y_k^{(i)}$: This represents the output of the Batch Normalization layer for fea
   $$
   \frac{\partial L}{\partial \beta_k} = \sum_{i=1}^{m} \delta_k^{(i)}
   $$
+
+### 2. Gradient with Respect to Normalized Input
+
+$$
+\frac{\partial L}{\partial \hat{x}_k^{(i)}} = \delta_k^{(i)} \gamma_k
+$$
+

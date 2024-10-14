@@ -70,7 +70,8 @@ class NN:
             # print("batch_mean:", batch_mean, "batch var:", batch_var)
 
             # Normalize x to have mean of 0 and variance of 1
-            x_normalized = (x - batch_mean) / np.sqrt(batch_var + self.epsilon)
+            x_centered = x - batch_mean
+            x_normalized = x_centered / np.sqrt(batch_var + self.epsilon)
             # print("x_normalized:", x_normalized)
 
             # Scale and shift to the optimal range
@@ -81,7 +82,6 @@ class NN:
             running_mean[:] = self.momentum * running_mean + (1 - self.momentum) * batch_mean
             running_var[:] = self.momentum * running_var + (1 - self.momentum) * batch_var
 
-            x_centered = x - batch_mean
             return out, x_normalized, batch_var, x_centered
 
 
@@ -139,7 +139,9 @@ class NN:
         dbeta = np.sum(dout, axis=0, keepdims=True)
         # print("dout:", dout)
         # print("dbeta:", dbeta)
-        """ The parameter gamma is multiplied by the normalized output, so the gradient is """
+        """ The parameter gamma is multiplied by the normalized output => dout/dgamma = out,
+        dLoss/dgamma = dLoss/dout * dout/dgamma = dLoss/dout * out, where out is x_normalized 
+        so the dL/dgamma is: """
         dgamma = np.sum(dout * x_normalized, axis=0, keepdims=True)
         # print("dgamma:", dgamma)
 
@@ -174,7 +176,7 @@ class NN:
         # BatchNorm Backward for second hidden layer
         dz2 = da2 * self.relu_derivative(self.a2)
         dz2, dgamma2, dbeta2 = self.batch_norm_backward(
-            da2 * self.relu_derivative(self.a2), self.gamma2, self.x_normalized2, self.batch_var2, self.x_centered2) # override dz2
+            dz2, self.gamma2, self.x_normalized2, self.batch_var2, self.x_centered2) # override dz2
 
         # Gradients for W2 and b2, are found with normalized 
         self.dw2 = np.matmul(self.a1.T, dz2) + self.l2_lambda * self.W2  # Shape: (hidden1_size, hidden2_size)
@@ -189,7 +191,7 @@ class NN:
         # BatchNorm Backward for first hidden layer
         dz1 = da1 * self.relu_derivative(self.a1)
         dz1, dgamma1, dbeta1 = self.batch_norm_backward(
-            da1 * self.relu_derivative(self.a1), self.gamma1, self.x_normalized1, self.batch_var1, self.x_centered1) # override dz1
+            dz1, self.gamma1, self.x_normalized1, self.batch_var1, self.x_centered1) # override dz1
 
         # Gradients for W1 and b1
         self.dw1 = np.matmul(X.T, dz1) + self.l2_lambda * self.W1  # Shape: (input_size, hidden1_size)
