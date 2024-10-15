@@ -125,3 +125,80 @@ $$
 \frac{\partial L}{\partial \hat{x}_k^{(i)}} = \delta_k^{(i)} \gamma_k
 $$
 
+### 3. Gradients with Respect to Input
+
+Compute $\frac{\partial L}{\partial x_k^{(i)}}$:
+
+$$
+\frac{\partial L}{\partial x_k^{(i)}} = \frac{1}{m} \frac{1}{\sqrt{\sigma_k^2 + \epsilon}} \left( m \frac{\partial L}{\partial \hat{x}_k^{(i)}} - \sum_{j=1}^{m} \frac{\partial L}{\partial \hat{x}_k^{(j)}} - \hat{x}_k^{(i)} \sum_{j=1}^{m} \left( \frac{\partial L}{\partial \hat{x}_k^{(j)}} \hat{x}_k^{(j)} \right) \right)
+$$
+
+This equation can be derived step by step.
+
+#### Derivation Steps
+
+**Let**:
+
+- $\hat{x}_k^{(i)} = \frac{x_k^{(i)} - \mu_k}{\sqrt{\sigma_k^2 + \epsilon}}$
+- $\sigma_k^2 + \epsilon = \tilde{\sigma}_k^2$
+
+**Compute $\frac{\partial L}{\partial x_k^{(i)}}$**:
+
+1. **Gradient w.r.t. $x_k^{(i)}$**:
+
+   $$
+   \frac{\partial L}{\partial x_k^{(i)}} = \frac{\partial L}{\partial \hat{x}_k^{(i)}} \cdot \frac{\partial \hat{x}_k^{(i)}}{\partial x_k^{(i)}}
+   $$
+
+2. **Compute $\frac{\partial \hat{x}_k^{(i)}}{\partial x_k^{(i)}}$**:
+
+   $$
+   \frac{\partial \hat{x}_k^{(i)}}{\partial x_k^{(i)}} = \frac{1}{\sqrt{\tilde{\sigma}_k^2}} - \frac{(x_k^{(i)} - \mu_k)}{(\tilde{\sigma}_k^2)^{3/2}} \cdot \frac{\partial \sigma_k^2}{\partial x_k^{(i)}}
+   $$
+   
+   Since $\sigma_k^2 = \frac{1}{m} \sum_{j=1}^{m} (x_k^{(j)} - \mu_k)^2$, the derivative $\frac{\partial \sigma_k^2}{\partial x_k^{(i)}}$ involves terms from all samples in the batch.
+
+3. **Compute $\frac{\partial \mu_k}{\partial x_k^{(i)}}$ and $\frac{\partial \sigma_k^2}{\partial x_k^{(i)}}$**:
+
+   - $\frac{\partial \mu_k}{\partial x_k^{(i)}} = \frac{1}{m}$
+   - $\frac{\partial \sigma_k^2}{\partial x_k^{(i)}} = \frac{2}{m} (x_k^{(i)} - \mu_k) - \frac{2}{m} \sum_{j=1}^{m} (x_k^{(j)} - \mu_k) \cdot \frac{\partial \mu_k}{\partial x_k^{(i)}}$
+
+4. **Assemble the Gradient**:
+
+   After computing the necessary partial derivatives, substitute back to find $\frac{\partial L}{\partial x_k^{(i)}}$.
+
+### 4. Simplified Vectorized Form
+
+In practice, we implement a vectorized version for efficiency.
+
+Let:
+
+- $\mathbf{\hat{X}}$: Matrix of normalized inputs
+- $\mathbf{\delta}$: Matrix of upstream gradients
+
+Compute:
+
+1. **Gradients w.r.t. $\gamma$ and $\beta$**:
+
+   $$
+   \frac{\partial L}{\partial \gamma} = \sum_{i=1}^{m} \mathbf{\delta}^{(i)} \odot \mathbf{\hat{X}}^{(i)}
+   $$
+   
+   $$
+   \frac{\partial L}{\partial \beta} = \sum_{i=1}^{m} \mathbf{\delta}^{(i)}
+   $$
+
+2. **Gradient w.r.t. $\hat{\mathbf{X}}$**:
+
+   $$
+   \frac{\partial L}{\partial \hat{\mathbf{X}}} = \mathbf{\delta} \odot \gamma
+   $$
+
+3. **Gradient w.r.t. Input $\mathbf{X}$**:
+
+   $$
+   \frac{\partial L}{\partial \mathbf{X}} = \frac{1}{m} \left( \tilde{\sigma}^{-1} \left( m \frac{\partial L}{\partial \hat{\mathbf{X}}} - \sum \frac{\partial L}{\partial \hat{\mathbf{X}}} - \hat{\mathbf{X}} \odot \sum \left( \frac{\partial L}{\partial \hat{\mathbf{X}}} \odot \hat{\mathbf{X}} \right) \right) \right)
+   $$
+
+- $\odot$ denotes element-wise multiplication.
+- Summations are over the batch dimension.
