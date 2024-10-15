@@ -130,12 +130,52 @@ class NN:
     
     # BatchNorm Backward Function
     def batch_norm_backward(self, dout, gamma, x_normalized, batch_var, x_centered):
+        """
+        /**
+        * @brief Performs the backward pass for batch normalization.
+        *
+        * This method computes the gradients of the loss with respect to the input 
+        * of the BatchNorm layer and its learnable parameters gamma and beta.
+        *
+        * @param dout 
+        *        Gradient of the loss with respect to the output of the BatchNorm layer.
+        *        Shape: (batch_size, num_features)
+        *
+        * @param gamma 
+        *        Learnable scale parameter for the BatchNorm layer.
+        *        Shape: (1, num_features)
+        *
+        * @param x_normalized 
+        *        Normalized input,  output of the BatchNorm layer.
+        *        computed as (x - mean) / sqrt(variance + epsilon) during fw. prop.
+        *        Shape: (batch_size, num_features)
+        *
+        * @param batch_var 
+        *        Variance of the batch computed during the forward pass.
+        *        Shape: (1, num_features)
+        *
+        * @param x_centered 
+        *        Centered input, computed as (x - mean).
+        *        Shape: (batch_size, num_features)
+        *
+        * @return 
+        *        A tuple containing:
+        *        - dx: Gradient of the loss with respect to the input of the BatchNorm layer.
+        *              Shape: (batch_size, num_features)
+        *        - dgamma: Gradient of the loss with respect to the gamma parameter.
+        *                  Shape: (1, num_features)
+        *        - dbeta: Gradient of the loss with respect to the beta parameter.
+        *                 Shape: (1, num_features)
+        */
+        """
+       
         m = dout.shape[0]
 
         """ 
         Compute the gradient with respect to beta (dbeta):
         out = gamma * x_normalized + beta 
         => dout/dbeta = 1
+        dLoss/dbeta = dLoss/dout * dout/dbeta = dLoss/dout
         => dLoss/dbeta = sum(dout) over the batch
         """
         dbeta = np.sum(dout, axis=0, keepdims=True)
@@ -144,8 +184,9 @@ class NN:
 
         """ 
         Compute the gradient with respect to gamma (dgamma):
-        out = gamma * x_normalized + beta 
+        out = gamma * x_normalized + beta
         => dout/dgamma = x_normalized
+        dLoss/dgamma = dLoss/dout * dout/dgamma = dLoss/dout * x_normalized
         => dLoss/dgamma = sum(dout * x_normalized) over the batch
         """
         dgamma = np.sum(dout * x_normalized, axis=0, keepdims=True)
