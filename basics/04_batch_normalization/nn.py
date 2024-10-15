@@ -129,33 +129,86 @@ class NN:
         return self.a3
     
     # BatchNorm Backward Function
-    """ to compute the gradients, derivatives of the loss with respect to the inputs and the learnable parameters """
     def batch_norm_backward(self, dout, gamma, x_normalized, batch_var, x_centered):
         m = dout.shape[0]
 
-        """ out = gamma*out+beta -> dout/dbeta = 1
-        dLoss/dbeta = dLoss/dout * dout/dbeta = dLoss/dout
-        we sum up entire batch of dLoss/dout """
+        """ 
+        Compute the gradient with respect to beta (dbeta):
+        out = gamma * x_normalized + beta 
+        => dout/dbeta = 1
+        => dLoss/dbeta = sum(dout) over the batch
+        """
         dbeta = np.sum(dout, axis=0, keepdims=True)
         # print("dout:", dout)
         # print("dbeta:", dbeta)
-        """ The parameter gamma is multiplied by the normalized output => dout/dgamma = out,
-        dLoss/dgamma = dLoss/dout * dout/dgamma = dLoss/dout * out, where out is x_normalized 
-        so the dL/dgamma is: """
+
+        """ 
+        Compute the gradient with respect to gamma (dgamma):
+        out = gamma * x_normalized + beta 
+        => dout/dgamma = x_normalized
+        => dLoss/dgamma = sum(dout * x_normalized) over the batch
+        """
         dgamma = np.sum(dout * x_normalized, axis=0, keepdims=True)
-        # print("dgamma:", dgamma)
 
+        """ 
+        Compute the gradient with respect to the normalized input (dx_normalized):
+        Since out = gamma * x_normalized + beta,
+        => dout/dx_normalized = gamma
+        => dLoss/dx_normalized = dout * gamma
+        """
         dx_normalized = dout * gamma
-        dvar = np.sum(dx_normalized * x_centered * -0.5 * (batch_var + self.epsilon)**(-1.5), axis=0, keepdims=True)
-        dmean = np.sum(dx_normalized * -1 / np.sqrt(batch_var + self.epsilon), axis=0, keepdims=True) + \
-                dvar * np.mean(-2 * x_centered, axis=0, keepdims=True)
 
-        dx = dx_normalized / np.sqrt(batch_var + self.epsilon) + \
-             dvar * 2 * x_centered / m + \
-             dmean / m
+        """ 
+        Compute the gradient with respect to variance (dvar):
+        The variance affects the normalization as follows:
+        x_normalized = (x - mean) / sqrt(var + epsilon)
+        => dLoss/dvar = sum(dLoss/dx_normalized * (x - mean) * (-0.5) * (var + epsilon)^(-1.5)) over the batch
+        This accounts for how changes in variance influence the normalized inputs.
+        """
+        dvar = np.sum(
+            dx_normalized * x_centered * -0.5 * (batch_var + self.epsilon)**(-1.5), 
+            axis=0, 
+            keepdims=True
+        )
+
+        """ 
+        Compute the gradient with respect to mean (dmean):
+        The mean affects the normalization in two ways:
+        1. Directly through (x - mean)
+        2. Indirectly through the variance (since variance is computed based on the mean)
+        
+        Therefore, the total gradient with respect to mean is:
+        dLoss/dmean = sum(dLoss/dx_normalized * (-1) / sqrt(var + epsilon)) over the batch 
+                    + dvar * mean(-2 * (x - mean)) over the batch
+        """
+        dmean = (
+            np.sum(
+                dx_normalized * -1 / np.sqrt(batch_var + self.epsilon), 
+                axis=0, 
+                keepdims=True
+            ) 
+            + 
+            dvar * np.mean(-2 * x_centered, axis=0, keepdims=True)
+        )
+
+        """ 
+        Compute the gradient with respect to the input x (dx):
+        Combining the gradients from the normalization, variance, and mean:
+        dx = (dLoss/dx_normalized) / sqrt(var + epsilon)
+            + (dLoss/dvar) * 2 * (x - mean) / m
+            + (dLoss/dmean) / m
+        This ensures that all components influencing the input x are accounted for in the gradient.
+        """
+        dx = (
+            dx_normalized / np.sqrt(batch_var + self.epsilon) 
+            + 
+            dvar * 2 * x_centered / m 
+            + 
+            dmean / m
+        )
 
         return dx, dgamma, dbeta
-    
+
     # Backward Propagation
     def backward_pass(self, X, y, y_pred, training=True):
         m = y.shape[0]
