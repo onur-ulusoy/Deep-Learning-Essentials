@@ -316,6 +316,32 @@ class NN:
         self.gamma1 -= self.learning_rate * self.dgamma1
         self.beta1 -= self.learning_rate * self.dbeta1
 
+    def calculate_loss(self, y, y_pred):
+        """
+        Calculate the Mean Squared Error (MSE) loss between true values and predictions.
+        """
+        loss = np.mean((y - y_pred) ** 2)
+
+        # Compute weights sum for L2 regularization
+        weights_sum = np.sum(np.square(self.W1)) + np.sum(np.square(self.W2)) + np.sum(np.square(self.W3))
+
+        m = y.shape[0]
+        # Compute L2 regularization term
+        l2_loss = self.l2_lambda / (2 * m) * weights_sum
+        loss += l2_loss
+        return loss
+
+    def train_model(self, X, y, epochs=1000):
+        for epoch in range(epochs):
+            # Forward pass to get predictions
+            y_pred = self.forward_pass(X, training=True)
+            # Backward pass to update weights
+            self.backward_pass(X, y, y_pred, training=True)
+            # Every 100 epochs, calculate and print the loss
+            if epoch % 100 == 0:
+                loss = self.calculate_loss(y, y_pred)
+                print(f'Epoch {epoch}, Loss: {loss:.4f}')
+                
 # Code block to observe and test batch normalization algorithms
 if __name__ == "__main__":
     # Create input data (2 samples, 2 features)
