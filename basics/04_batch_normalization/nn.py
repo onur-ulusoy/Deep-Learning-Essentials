@@ -1,4 +1,5 @@
 import numpy as np
+import torch, pickle
 
 # Neural network for desired architecture, created using only numpy
 class NN:
@@ -341,8 +342,42 @@ class NN:
             if epoch % 100 == 0:
                 loss = self.calculate_loss(y, y_pred)
                 print(f'Epoch {epoch}, Loss: {loss:.4f}')
-                
-# Code block to observe and test batch normalization algorithms
+
+    def save_model(self, y_original_min, y_original_max):
+        # Convert weights, biases, and BatchNorm parameters to PyTorch tensors if they aren't already
+        model_data = {
+            # Weights and biases
+            'fc1_weight': torch.tensor(self.W1.T, dtype=torch.float32) if not isinstance(self.W1, torch.Tensor) else self.W1,
+            'fc1_bias': torch.tensor(self.b1, dtype=torch.float32) if not isinstance(self.b1, torch.Tensor) else self.b1,
+            'fc2_weight': torch.tensor(self.W2.T, dtype=torch.float32) if not isinstance(self.W2, torch.Tensor) else self.W2,
+            'fc2_bias': torch.tensor(self.b2, dtype=torch.float32) if not isinstance(self.b2, torch.Tensor) else self.b2,
+            'fc3_weight': torch.tensor(self.W3.T, dtype=torch.float32) if not isinstance(self.W3, torch.Tensor) else self.W3,
+            'fc3_bias': torch.tensor(self.b3, dtype=torch.float32) if not isinstance(self.b3, torch.Tensor) else self.b3,
+            # BatchNorm parameters for first hidden layer
+            'gamma1': torch.tensor(self.gamma1, dtype=torch.float32) if not isinstance(self.gamma1, torch.Tensor) else self.gamma1,
+            'beta1': torch.tensor(self.beta1, dtype=torch.float32) if not isinstance(self.beta1, torch.Tensor) else self.beta1,
+            'running_mean1': torch.tensor(self.running_mean1, dtype=torch.float32) if not isinstance(self.running_mean1, torch.Tensor) else self.running_mean1,
+            'running_var1': torch.tensor(self.running_var1, dtype=torch.float32) if not isinstance(self.running_var1, torch.Tensor) else self.running_var1,
+            # BatchNorm parameters for second hidden layer
+            'gamma2': torch.tensor(self.gamma2, dtype=torch.float32) if not isinstance(self.gamma2, torch.Tensor) else self.gamma2,
+            'beta2': torch.tensor(self.beta2, dtype=torch.float32) if not isinstance(self.beta2, torch.Tensor) else self.beta2,
+            'running_mean2': torch.tensor(self.running_mean2, dtype=torch.float32) if not isinstance(self.running_mean2, torch.Tensor) else self.running_mean2,
+            'running_var2': torch.tensor(self.running_var2, dtype=torch.float32) if not isinstance(self.running_var2, torch.Tensor) else self.running_var2,
+            'y_original_min': y_original_min,
+            'y_original_max': y_original_max
+        }
+
+        # Get the directory where the script is located
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, 'trained_model.pkl')
+
+        # Save to a file (pickle format)
+        with open(file_path, 'wb') as f:
+            pickle.dump(model_data, f)
+
+        print(f"Model weights, biases, BatchNorm parameters, and y_original_min/max saved successfully at {file_path}.")   
+
+# Basic code block to observe and test batch normalization algorithms if there is any runtime error 
 if __name__ == "__main__":
     # Create input data (2 samples, 2 features)
     X = np.array([
@@ -365,10 +400,4 @@ if __name__ == "__main__":
 
     nn = NN(input_size, hidden1_size, hidden2_size, output_size, learning_rate)
 
-    # Forward pass
-    y_pred = nn.forward_pass(X, training=True)
-    print("\nOutput of forward pass:\n", y_pred)
-
-    # Backward pass
-    nn.backward_pass(X, y, y_pred, training=True)
-    print("\nBackward pass completed.")
+    nn.train_model(X,y,epochs=1000)
