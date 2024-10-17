@@ -1,7 +1,6 @@
 from basics.dataset_gen_scripts.polynomial_data import PolynomialDataGenerator
 import numpy as np
 from nn import NN
-from nn_torch import NN_torch
 import hyperparams as hp
 
 # Instantiate the data generator
@@ -38,17 +37,6 @@ network = NN(hp.input_size,
              hp.l2_lambda, 
              hp.dropout_p1, 
              hp.dropout_p2)
-
-# Uncomment below to train torch based nn and save model
-""" # Initialize the PyTorch neural network
-network = NN_torch( hp.input_size, 
-                    hp.hidden1_size, 
-                    hp.hidden2_size, 
-                    hp.output_size, 
-                    hp.learning_rate, 
-                    hp.l2_lambda, 
-                    hp.dropout_p1, 
-                    hp.dropout_p2) """
 
 # Train the network
 network.train_model(X, y_train_scaled, epochs=hp.epochs)
