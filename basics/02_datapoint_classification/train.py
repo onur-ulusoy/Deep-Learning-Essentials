@@ -1,4 +1,4 @@
-from spiral_datapoint import SpiralData
+from basics.dataset_gen_scripts.spiral_datapoint import SpiralData
 import numpy as np
 from nn import NN
 from nn_torch import NN_torch

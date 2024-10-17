@@ -1,4 +1,4 @@
-from polynomial_data import PolynomialDataGenerator
+from basics.dataset_gen_scripts.polynomial_data import PolynomialDataGenerator
 import numpy as np
 from nn import NN
 from nn_torch import NN_torch

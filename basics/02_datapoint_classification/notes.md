@@ -8,7 +8,7 @@ The neural network consists of an input layer, two hidden layers, and an output 
 I developed several scripts for this project:
 - `nn.py`: This script implements the neural network using only NumPy to better understand its internal mechanics.
 - `nn_torch.py`: Here, I used the Torch framework to implement the same neural network.
-- `spiral_datapoint.py`: This script initializes the data points for training and testing.
+- `spiral_datapoint.py`: This script initializes the data points for training and testing (moved [here](/basics/dataset_gen_scripts/spiral_datapoint.py)).
 - `tester.py`: Contains test classes for evaluating the models trained and saved using both `nn.py` and `nn_torch.py`.
 - `train.py` and `train_and_test.ipynb`: These scripts implement the training process for both versions of the neural network.
 - `training_comparison_exp.py`: An experimental script designed to explore the differences between the custom (NumPy-based) and Torch-based implementations of the training scripts.

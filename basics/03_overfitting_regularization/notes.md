@@ -8,7 +8,7 @@ The neural network consists of an input layer, two hidden layers, and an output 
 - `nn.py`: Implements the neural network using only NumPy, providing a deeper understanding of its internal mechanics.
 - `nn_torch.py`: Implements the same neural network using the PyTorch framework for easier deployment and comparison.
 - `hyperparams.py`: Initializes and stores hyperparameters for consistent use across both training and testing scripts.
-- `polynomial_data.py`: Generates polynomial data points in a parametrized way for training and testing.
+- `polynomial_data.py`: Generates polynomial data points in a parametrized way for training and testing (moved [here](/basics/dataset_gen_scripts/polynomial_data.py)).
 - `test.py`: Contains a model testing class to evaluate both the NumPy-based (`nn.py`) and PyTorch-based (`nn_torch.py`) networks.
 - `training.py`: Implements the training process for both `nn.py` and `nn_torch.py` models.
 

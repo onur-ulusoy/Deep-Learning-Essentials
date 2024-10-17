@@ -3,7 +3,7 @@ import pickle
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-from polynomial_data import PolynomialDataGenerator
+from basics.dataset_gen_scripts.polynomial_data import PolynomialDataGenerator
 from nn_torch import NN_torch
 import hyperparams as hp
 

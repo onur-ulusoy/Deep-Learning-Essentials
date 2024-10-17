@@ -2,7 +2,7 @@ import numpy as np
 import pickle
 import os
 import matplotlib.pyplot as plt
-from spiral_datapoint import SpiralData
+from basics.dataset_gen_scripts.spiral_datapoint import SpiralData
 from nn import NN
 
 class ModelTester:
