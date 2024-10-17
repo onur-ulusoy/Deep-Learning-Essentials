@@ -1,5 +1,5 @@
 import numpy as np
-import torch, pickle
+import torch, pickle, os
 
 # Neural network for desired architecture, created using only numpy
 class NN:
@@ -401,3 +401,4 @@ if __name__ == "__main__":
     nn = NN(input_size, hidden1_size, hidden2_size, output_size, learning_rate)
 
     nn.train_model(X,y,epochs=1000)
+    nn.save_model(1,1)
