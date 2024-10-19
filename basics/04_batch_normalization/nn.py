@@ -91,7 +91,7 @@ class NN:
             x_normalized = (x - running_mean) / np.sqrt(running_var + self.epsilon)
             # Scale and shift to the optimal range
             out = gamma * x_normalized + beta
-            
+
             # We have to return the other parameters as None for test to not raise run time error, because it expects 4 params
             return out, None, None, None 
     
@@ -344,7 +344,7 @@ class NN:
                 loss = self.calculate_loss(y, y_pred)
                 print(f'Epoch {epoch}, Loss: {loss:.4f}')
 
-    def save_model(self, y_original_min, y_original_max):
+    def save_model(self, y_mean, y_std):
         # Convert weights, biases, and BatchNorm parameters to PyTorch tensors if they aren't already
         model_data = {
             # Weights and biases
@@ -364,8 +364,8 @@ class NN:
             'beta2': torch.tensor(self.beta2, dtype=torch.float32) if not isinstance(self.beta2, torch.Tensor) else self.beta2,
             'running_mean2': torch.tensor(self.running_mean2, dtype=torch.float32) if not isinstance(self.running_mean2, torch.Tensor) else self.running_mean2,
             'running_var2': torch.tensor(self.running_var2, dtype=torch.float32) if not isinstance(self.running_var2, torch.Tensor) else self.running_var2,
-            'y_original_min': y_original_min,
-            'y_original_max': y_original_max
+            'y_mean': y_mean,
+            'y_std': y_std
         }
 
         # Get the directory where the script is located

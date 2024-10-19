@@ -55,8 +55,8 @@ class ModelTester:
                 self.network.running_var2 = model_data['running_var2'].numpy() if isinstance(model_data['running_var2'], torch.Tensor) else model_data['running_var2']
 
                 # Store original min and max for scaling
-                self.y_original_min = model_data['y_original_min']
-                self.y_original_max = model_data['y_original_max']
+                self.y_mean = model_data['y_mean']
+                self.y_std = model_data['y_std']
 
         else:
             raise FileNotFoundError(f"No saved model found at {model_path}.")
@@ -79,15 +79,17 @@ class ModelTester:
         X_test, y_test = test_data.get_data()
         y_test = y_test.reshape(-1, 1)
 
-        # Scale the test labels using stored min and max
-        y_test_scaled = (y_test - self.y_original_min) / (self.y_original_max - self.y_original_min)
+        # Standardize the test labels using stored mean and std
+        y_test_standardized = (y_test - self.y_mean) / self.y_std
 
         # Perform a forward pass using the loaded model
-        y_pred_scaled = self.network.forward_pass(X_test, training=False).astype(np.float32)
-        y_pred_original = y_pred_scaled * (self.y_original_max - self.y_original_min) + self.y_original_min
+        y_pred_standardized = self.network.forward_pass(X_test, training=False).astype(np.float32)
 
-        # Calculate and print the mean squared error (Normalized error)
-        mse = np.mean((y_test_scaled - y_pred_scaled)**2)
+        # Convert the predicted values back to the original scale
+        y_pred_original = y_pred_standardized * self.y_std + self.y_mean
+
+        # Calculate and print the mean squared error (based on standardized data)
+        mse = np.mean((y_test_standardized - y_pred_standardized)**2)
         print(f"Mean Squared Error on the test data: {mse:.4f}")
 
         # Plot the predictions

@@ -18,12 +18,14 @@ X, y = train_data.get_data()
 #train_data.plot_data()
 y = y.reshape(-1, 1)
 
-y_original_min = y.min()
-y_original_max = y.max()
-print(y.min())
-print(y.max())
-y_train_scaled = (y - y_original_min) / (y_original_max - y_original_min)
+# Calculate the mean and standard deviation of the target labels (y)
+y_mean = y.mean()
+y_std = y.std()
 
+# Standardize y (make mean 0 and std 1)
+y_train_standardized = (y - y_mean) / y_std
+
+# Print shapes (same as before)
 print(f"Shape of X: {X.shape}")
 print(f"Shape of y: {y.shape}")
 
@@ -40,5 +42,5 @@ network = NN(hp.input_size,
              hp.batchnorm_momentum)
 
 # Train the network
-network.train_model(X, y_train_scaled, epochs=hp.epochs)
-network.save_model(y_original_min, y_original_max)
+network.train_model(X, y_train_standardized, epochs=hp.epochs)
+network.save_model(y_mean, y_std)
