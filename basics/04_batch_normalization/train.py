@@ -36,7 +36,8 @@ network = NN(hp.input_size,
              hp.learning_rate, 
              hp.l2_lambda, 
              hp.dropout_p1, 
-             hp.dropout_p2)
+             hp.dropout_p2,
+             hp.batchnorm_momentum)
 
 # Train the network
 network.train_model(X, y_train_scaled, epochs=hp.epochs)
