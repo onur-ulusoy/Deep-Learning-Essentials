@@ -91,8 +91,9 @@ class NN:
             x_normalized = (x - running_mean) / np.sqrt(running_var + self.epsilon)
             # Scale and shift to the optimal range
             out = gamma * x_normalized + beta
-
-            return out
+            
+            # We have to return the other parameters as None for test to not raise run time error, because it expects 4 params
+            return out, None, None, None 
     
     # Forward Propagation
     def forward_pass(self, X, training=False):
