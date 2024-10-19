@@ -61,7 +61,50 @@ class ModelTester:
         else:
             raise FileNotFoundError(f"No saved model found at {model_path}.")
 
-    
+    # Function to run the test on generated polynomial data
+    def run_test(self, degree, num_points, noise_level, scale_factor, polynomial_seed, noise_seed):
+
+        # Generate test data similar to training data
+        test_data = PolynomialDataGenerator(
+            degree=degree,
+            num_points=num_points,
+            noise_level=noise_level,
+            scale_factor=scale_factor,
+            polynomial_seed=polynomial_seed,
+            noise_seed=noise_seed
+        )
+        # test_data.plot_data()
+
+        # Get test data points and labels
+        X_test, y_test = test_data.get_data()
+        y_test = y_test.reshape(-1, 1)
+
+        # Scale the test labels using stored min and max
+        y_test_scaled = (y_test - self.y_original_min) / (self.y_original_max - self.y_original_min)
+
+        # Perform a forward pass using the loaded model
+        y_pred_scaled = self.network.forward_pass(X_test, training=False).astype(np.float32)
+        y_pred_original = y_pred_scaled * (self.y_original_max - self.y_original_min) + self.y_original_min
+
+        # Calculate and print the mean squared error (Normalized error)
+        mse = np.mean((y_test_scaled - y_pred_scaled)**2)
+        print(f"Mean Squared Error on the test data: {mse:.4f}")
+
+        # Plot the predictions
+        self.plot_predictions(X_test, y_test, y_pred_original)
+
+    # Function to plot predictions
+    def plot_predictions(self, X_test, y_test, y_pred):
+        plt.figure(figsize=(8, 6))
+        plt.scatter(X_test, y_test, label='True Values', color='blue')
+        plt.scatter(X_test, y_pred, label='Predicted Values', color='red')
+        plt.title('Model Predictions vs True Values')
+        plt.xlabel('X')
+        plt.ylabel('y')
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+        
 # Main function to test the model
 if __name__ == "__main__":
 
@@ -75,4 +118,14 @@ if __name__ == "__main__":
 
     # Load the saved model
     tester.load_model()
+
+    # Run the test
+    tester.run_test(
+        degree=hp.degree, 
+        num_points=hp.num_points, 
+        noise_level=hp.noise_level, 
+        scale_factor=hp.scale_factor, 
+        polynomial_seed=hp.polynomial_seed, 
+        noise_seed=hp.noise_seed_test
+    )
     

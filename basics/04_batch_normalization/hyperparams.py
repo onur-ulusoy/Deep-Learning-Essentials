@@ -18,4 +18,4 @@ l2_lambda=0.01
 dropout_p1=0.05
 dropout_p2=0.05
 batchnorm_momentum = 0.9
-epochs = 50000
+epochs = 10000
